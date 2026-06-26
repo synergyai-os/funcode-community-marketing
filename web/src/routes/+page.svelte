@@ -1,6 +1,13 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
-	import { Accordion, Badge, Button, Card, TestimonialDeck } from '$lib/components/ui';
+	import {
+		Accordion,
+		AudienceChip,
+		Badge,
+		Button,
+		Card,
+		TestimonialDeck
+	} from '$lib/components/ui';
 	import { testimonials, published } from '$lib/data/testimonials';
 	import IconArrowRight from '~icons/lucide/arrow-right';
 	import IconSparkles from '~icons/lucide/sparkles';
@@ -98,15 +105,17 @@
 		{ label: 'Build with our tools', icon: IconWrench }
 	];
 
-	// AUD-1 — mirror the audience so people self-identify.
-	const audience: string[] = [
-		'Product managers',
-		'Designers who build now',
-		'Founders',
-		'Indie makers',
-		'Agent-curious engineers',
-		'Teams going faster',
-		'…and you'
+	// AUD-1 — mirror the audience so people self-identify. Each gets a face (emoji);
+	// the final "…and you" is the accent invitation, not just another label.
+	type Audience = { emoji: string; label: string; you?: boolean };
+	const audience: Audience[] = [
+		{ emoji: '🧭', label: 'Product managers' },
+		{ emoji: '🎨', label: 'Designers who build now' },
+		{ emoji: '🚀', label: 'Founders' },
+		{ emoji: '🛠️', label: 'Indie makers' },
+		{ emoji: '🤖', label: 'Agent-curious engineers' },
+		{ emoji: '⚡', label: 'Teams going faster' },
+		{ emoji: '👋', label: '…and you', you: true }
 	];
 
 	// STR-7 / STR-8 / STR-9 — free is the heart; everything else is optional.
@@ -364,9 +373,11 @@
 					framework — bring what you like.
 				</p>
 
-				<div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-					{#each audience as who (who)}
-						<Badge variant="neutral">{who}</Badge>
+				<div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+					{#each audience as who, i (who.label)}
+						<AudienceChip emoji={who.emoji} index={i} variant={who.you ? 'accent' : 'neutral'}>
+							{who.label}
+						</AudienceChip>
 					{/each}
 				</div>
 			</div>
