@@ -64,7 +64,7 @@
 
 <span
 	bind:this={el}
-	class={`audience-chip group inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-semibold tracking-wide uppercase shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-card ${variants[variant]} ${className}`}
+	class={`audience-chip group inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-semibold tracking-wide whitespace-nowrap uppercase shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-card ${variants[variant]} ${className}`}
 	class:audience-chip--reverse={driftReversed}
 	style={`--drift-dur:${driftDuration}s;--drift-delay:${driftDelay}s`}
 	onpointermove={magnetize}

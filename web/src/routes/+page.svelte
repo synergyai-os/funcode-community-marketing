@@ -3,6 +3,7 @@
 	import {
 		Accordion,
 		AudienceChip,
+		AudienceCloud,
 		Badge,
 		Button,
 		Card,
@@ -211,7 +212,13 @@
 				class="pointer-events-none absolute -top-40 left-1/2 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-accent-soft blur-3xl"
 			></div>
 
-			<div class="relative mx-auto max-w-4xl px-6 pt-16 pb-20 text-center sm:pt-24">
+			<!-- The audience, alive: floating chips frame the headline so visitors see
+			     themselves on arrival (AUD-1). lg+ only — the gutters that hold the
+			     scatter don't exist on smaller screens, where the "Who it's for"
+			     section carries the same roll-call. -->
+			<AudienceCloud items={audience} class="hidden lg:block" />
+
+			<div class="relative z-10 mx-auto max-w-4xl px-6 pt-16 pb-20 text-center sm:pt-24">
 				<Badge variant="neutral" dot>A free community for builders</Badge>
 
 				<h1 class="mt-8 text-5xl font-black tracking-tight text-balance sm:text-7xl">
