@@ -1,0 +1,36 @@
+---
+description: FunCode workspace — Product Brain CLI guardrails and Chain-first workflow
+alwaysApply: true
+---
+
+# FunCode — Product Brain (always on)
+
+## Workspace guard (DEC-4)
+
+Before any `pb` command, run from **this repo root** and verify:
+
+```bash
+pb whoami
+```
+
+Must show: workspace **FunCode**, profile **funcode**, source **repo-local pin**.
+
+If workspace is **Product Brain** or source is **global** → STOP. Wrong Chain.
+
+## Chain is SSOT
+
+- Retrieve: `pb get`, `pb search`, `pb context`, `pb orient --task "..."`
+- Write: `pb capture` with `--source-ref` when knowledge has a URL/source
+- Do not duplicate Chain content in new markdown files (DEC-1, DEC-2)
+
+## Markdown
+
+Never create markdown unless Randy explicitly asks. Exception: `.ProductBrain/Docs/` (PARA) with 5-word confirmation (DEC-3).
+
+## Root entries
+
+Run `pb get WP-1` and `pb get PAT-1` for community context and eval specs — do not rely on stale ID tables in adapter files.
+
+## External library docs
+
+Use **Context7 MCP** for third-party APIs/frameworks — not for FunCode Chain knowledge (see `context7.mdc`).

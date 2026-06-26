@@ -1,0 +1,44 @@
+---
+description: FunCode design system — derive-or-update enforcement for web UI
+globs: web/**
+alwaysApply: false
+---
+
+# FunCode Design System — derive or update, never bespoke
+
+Authority lives on the Chain. Before creating or editing any UI under `web/`, retrieve it — do not work from memory:
+
+```bash
+pb get DEC-11   # the design-system decision (code = SSOT, Chain = governance)
+pb get STD-1    # design tokens (Tailwind v4 @theme, semantic-by-role)
+pb get STD-2    # icon standard (unplugin-icons + Lucide via ~icons/lucide/*)
+pb get STD-3    # atom contract (Svelte 5 + svelte/elements wrapper pattern)
+pb get BR-2     # the rule below
+pb get ROL-2    # Product Design — owns the system
+```
+
+## The rule (BR-2)
+
+**Derive from the design system, or update it with Product Design (ROL-2). Never bespoke.**
+
+- **Reuse** the atoms in `web/src/lib/components/ui/` — `Icon`, `Button`, `Badge`, `Card` — and the `@theme` tokens in `web/src/routes/layout.css`.
+- **Icons:** `import IconX from '~icons/lucide/<name>'`; size/color via Tailwind + `currentColor`. Never inline `<svg>`, never `lucide-svelte` or runtime `@iconify/svelte`.
+- **Colors/spacing/radius/shadow:** use tokens (`bg-accent`, `text-ink`, `rounded-card`, …). Never hardcode hex or arbitrary `[...]` values for themed properties.
+- **Buttons:** compose the `Button` atom, never a re-styled raw `<button>`.
+
+## When the system lacks something
+
+Do **not** invent a one-off because you want to or assume you need it (wanting to build is not authorization — `BR-1`). Instead **update the system**:
+
+1. Add/extend the token, atom, or standard in `web/` **and** capture the change on the Chain under Product Design (`ROL-2`) — update the relevant `STD` / `DEC`.
+2. Keep code and Chain in sync.
+
+## Enforcement
+
+Run before finishing UI work — these fail on bespoke UI:
+
+```bash
+cd web && npm run lint   # includes the design-system guard (lint:ds)
+```
+
+The guard (`web/scripts/check-design-system.mjs`) blocks hardcoded hex, arbitrary themed values, inline `<svg>`, and raw `<button>`. It also runs in CI.

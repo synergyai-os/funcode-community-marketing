@@ -1,0 +1,33 @@
+---
+description: Use the ctx7 CLI for current external library and framework documentation
+alwaysApply: true
+---
+
+# Context7 — live documentation
+
+Use the **`ctx7` CLI** (CLI > MCP — see CLAUDE.md) for up-to-date **external** library/framework/API docs. Do **not** use it for FunCode Chain, community strategy, or repo-local conventions — use the `pb` CLI (`pb get`, `pb search`, `pb orient`).
+
+**Always prefer CLI over MCP.** Only fall back to the Context7 MCP if the CLI is unavailable or can't do what you need.
+
+## Use automatically when
+
+- Library setup, configuration, or migration (Convex, React, Next.js, Tailwind, etc.)
+- API reference or method signatures for third-party packages
+- User mentions a version ("React 19", "Next.js 15") or says "use context7"
+- User provides a Context7 library ID (`/org/project` or `/org/project/version`)
+- Training data may be outdated for the library in question
+
+## Do not use when
+
+- Answer lives on FunCode Chain or in `CLAUDE.md` workflow rules
+- Product Brain governance (`pb get`, `pb orient`)
+- Pure business/community advice grounded in Chain entries
+
+## Workflow
+
+1. `ctx7 library <name> "<full question>"` — resolve a library name to a Context7 ID (skip if the `/org/project` ID is already known).
+2. Pick best match: name, benchmark score, official source, version if specified.
+3. `ctx7 docs <libraryId> "<specific question>"` — fetch the docs.
+4. Answer from returned docs; cite version when relevant.
+
+Max ~3 calls per command per question. No secrets in queries.

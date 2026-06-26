@@ -1,0 +1,28 @@
+# FunCode root .gitignore
+#
+# We teach in the open: this is a PUBLIC repo and we commit for maximum
+# transparency. .productbrain/Docs/, .productbrain/config.json, CLAUDE.md,
+# AGENTS.md, .cursor/, .github/, content/, and web/ are all tracked on purpose.
+# Only real secrets and machine-local/build artifacts are ignored below.
+# (web/ has its own .gitignore; this root file covers everything else.)
+
+# Secrets & machine-local
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+.productbrain/config.local.json
+.productbrain/session.json
+
+# Dependencies & build output
+node_modules/
+web/.svelte-kit/
+web/build/
+.output/
+.vercel/
+.netlify/
+
+# OS
+.DS_Store
+Thumbs.db
