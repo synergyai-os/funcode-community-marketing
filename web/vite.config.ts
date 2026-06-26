@@ -1,10 +1,11 @@
 import tailwindcss from '@tailwindcss/vite';
 import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { svelteTesting } from '@testing-library/svelte/vite';
 import { defineConfig } from 'vite';
 import Icons from 'unplugin-icons/vite';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
 	plugins: [
 		tailwindcss(),
 		Icons({ compiler: 'svelte' }),
@@ -19,6 +20,14 @@ export default defineConfig({
 			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 			adapter: adapter()
-		})
-	]
-});
+		}),
+		// Resolves the browser Svelte build so components mount client-side under jsdom.
+		// Gated to test mode so it never affects the production build.
+		...(mode === 'test' ? [svelteTesting()] : [])
+	],
+	test: {
+		environment: 'jsdom',
+		globals: true,
+		setupFiles: ['./vitest-setup.ts']
+	}
+}));

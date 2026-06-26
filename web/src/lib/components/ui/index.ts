@@ -5,4 +5,5 @@ export { default as Card } from './Card.svelte';
 export { default as Accordion } from './Accordion.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Testimonial } from './Testimonial.svelte';
+export { default as TestimonialDeck } from './TestimonialDeck.svelte';
 export { default as Marquee } from './Marquee.svelte';

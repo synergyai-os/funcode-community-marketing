@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
-	import { Accordion, Badge, Button, Card } from '$lib/components/ui';
+	import { Accordion, Badge, Button, Card, TestimonialDeck } from '$lib/components/ui';
+	import { testimonials, published } from '$lib/data/testimonials';
 	import IconArrowRight from '~icons/lucide/arrow-right';
 	import IconSparkles from '~icons/lucide/sparkles';
 	import IconLayoutGrid from '~icons/lucide/layout-grid';
@@ -16,6 +17,11 @@
 	import IconMessagesSquare from '~icons/lucide/messages-square';
 	import IconLightbulb from '~icons/lucide/lightbulb';
 	import IconWrench from '~icons/lucide/wrench';
+
+	// Production ships only consented quotes (TEN-5/BR-3) → honest fallback when none.
+	// In dev we preview the deck with placeholders so the interaction is testable;
+	// `import.meta.env.DEV` is compiled out of the production bundle, so they never ship.
+	const stories = import.meta.env.DEV ? testimonials : published(testimonials);
 
 	const JOIN_URL = 'https://randyhereman.com/building';
 	const PRODUCT_BRAIN_URL = 'https://productbrain.io';
@@ -364,6 +370,48 @@
 					{/each}
 				</div>
 			</div>
+		</section>
+
+		<!--
+			Play Room stories. The swipeable deck (DEC-22) renders only consented quotes
+			(TEN-5); with none yet, we show an honest "stories soon" card (BR-3 — no
+			fabricated names). One consented quote flips this to the deck automatically.
+		-->
+		<section id="builders" class="py-20 sm:py-24">
+			{#if stories.length > 0}
+				<div class="mx-auto max-w-2xl px-6 text-center">
+					<Badge variant="neutral">In the open</Badge>
+					<h2 class="mt-6 text-3xl font-black tracking-tight text-balance sm:text-4xl">
+						Builders are already shipping
+					</h2>
+					<p class="mt-4 text-lg text-pretty text-ink-soft">
+						Real people building in Play Rooms instead of waiting for permission. Swipe through.
+					</p>
+				</div>
+
+				<div class="mt-12">
+					<TestimonialDeck items={stories} />
+				</div>
+			{:else}
+				<div class="mx-auto max-w-2xl px-6 text-center">
+					<Badge variant="neutral">In the open</Badge>
+					<h2 class="mt-6 text-3xl font-black tracking-tight text-balance sm:text-4xl">
+						Play Room stories, soon
+					</h2>
+					<p class="mt-4 text-lg text-pretty text-ink-soft">
+						We're collecting real builder stories — with consent — from people shipping in Play
+						Rooms. No fake quotes here.
+					</p>
+				</div>
+
+				<div class="mx-auto mt-12 max-w-xl px-6">
+					<Card title="Your story could be first">
+						Open a Play Room, ship something small, and tell us what changed. We'll ask before we
+						publish anything with your name on it. Until then, poke at the repo — that's the
+						curriculum.
+					</Card>
+				</div>
+			{/if}
 		</section>
 
 		<!-- Ways to go further (STR-7 dominant, STR-8/STR-9 optional) -->
