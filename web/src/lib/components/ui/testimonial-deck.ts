@@ -5,6 +5,9 @@
  * component or simulating drag physics.
  */
 
+/** A single testimonial rendered by the deck. */
+export type DeckItem = { quote: string; name: string; role: string };
+
 /** Constrain an index to the deck's bounds; an empty deck resolves to 0. */
 export function clampIndex(count: number, index: number): number {
 	if (count <= 0) return 0;
@@ -29,12 +32,14 @@ export function prevIndex(count: number, index: number): number {
  * live here as named constants rather than in Tailwind `@theme`.
  */
 export const STACK_GEOMETRY = {
-	/** Vertical lift added per depth step, in px (deeper cards sit higher). */
-	liftPx: 14,
+	/** Vertical offset per depth step, in px — peeked cards rise behind the front. */
+	liftPx: 7,
 	/** Scale removed per depth step (deeper cards are smaller). */
-	scaleStep: 0.06,
-	/** Opacity removed per depth step (deeper cards are fainter). */
-	opacityStep: 0.18,
+	scaleStep: 0.04,
+	/** Opacity removed per depth step — kept low so peeked cards stay crisp. */
+	opacityStep: 0.05,
+	/** Fan rotation magnitude for peeked cards, in degrees. */
+	fanDeg: 5,
 	/** Larger divisor = gentler tilt while dragging. */
 	dragRotationDivisor: 40
 } as const;
@@ -48,10 +53,20 @@ export type CardTransform = { translateY: number; scale: number; opacity: number
  */
 export function depthTransform(depth: number): CardTransform {
 	return {
-		translateY: depth * STACK_GEOMETRY.liftPx,
+		// `+ 0` normalises the `-0` that `-depth * lift` yields at depth 0.
+		translateY: -depth * STACK_GEOMETRY.liftPx + 0,
 		scale: Math.max(0, 1 - depth * STACK_GEOMETRY.scaleStep),
 		opacity: Math.min(1, Math.max(0, 1 - depth * STACK_GEOMETRY.opacityStep))
 	};
+}
+
+/**
+ * Fan rotation (degrees) for a card at a given stack slot. The front card sits
+ * flat; peeked cards alternate left/right so the deck spreads symmetrically.
+ */
+export function fanRotation(offset: number): number {
+	if (offset <= 0) return 0;
+	return (offset % 2 === 1 ? -1 : 1) * STACK_GEOMETRY.fanDeg;
 }
 
 /** Tilt (degrees) for the active card dragged `x` px horizontally. */

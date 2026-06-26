@@ -6,6 +6,7 @@ import {
 	resolveSwipe,
 	depthTransform,
 	dragTilt,
+	fanRotation,
 	STACK_GEOMETRY
 } from './testimonial-deck';
 
@@ -118,9 +119,9 @@ describe('depthTransform', () => {
 		expect(depthTransform(0)).toEqual({ translateY: 0, scale: 1, opacity: 1 });
 	});
 
-	it('lifts, shrinks and fades cards as depth grows', () => {
+	it('raises, shrinks and fades cards as depth grows', () => {
 		const back = depthTransform(2);
-		expect(back.translateY).toBe(2 * STACK_GEOMETRY.liftPx);
+		expect(back.translateY).toBe(-2 * STACK_GEOMETRY.liftPx);
 		expect(back.scale).toBeCloseTo(1 - 2 * STACK_GEOMETRY.scaleStep);
 		expect(back.opacity).toBeCloseTo(1 - 2 * STACK_GEOMETRY.opacityStep);
 	});
@@ -139,6 +140,17 @@ describe('depthTransform', () => {
 
 	it('clamps opacity to 1 for an overshooting negative depth', () => {
 		expect(depthTransform(-0.3).opacity).toBe(1);
+	});
+});
+
+describe('fanRotation', () => {
+	it('keeps the front card flat', () => {
+		expect(fanRotation(0)).toBe(0);
+	});
+
+	it('fans peeked cards to alternating sides', () => {
+		expect(fanRotation(1)).toBe(-STACK_GEOMETRY.fanDeg);
+		expect(fanRotation(2)).toBe(STACK_GEOMETRY.fanDeg);
 	});
 });
 

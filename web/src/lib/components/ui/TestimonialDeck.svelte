@@ -2,15 +2,14 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import Button from './Button.svelte';
 	import DeckCard from './DeckCard.svelte';
-	import { nextIndex, prevIndex, resolveSwipe } from './testimonial-deck';
+	import { nextIndex, prevIndex, resolveSwipe, type DeckItem } from './testimonial-deck';
 	import IconChevronLeft from '~icons/lucide/chevron-left';
 	import IconChevronRight from '~icons/lucide/chevron-right';
 
-	type Item = { quote: string; name: string; role: string };
-
-	let { items, class: className = '' }: { items: Item[]; class?: string } = $props();
+	let { items, class: className = '' }: { items: DeckItem[]; class?: string } = $props();
 
 	const count = $derived(items.length);
+	const dots = $derived(items.map((_, i) => i));
 
 	let index = $state(0);
 	// Raw horizontal drag offset (px) of the active card; the card's own spring
@@ -25,6 +24,10 @@
 			return { item: items[itemIndex], offset, key: itemIndex };
 		})
 	);
+
+	// Distance threshold falls back to this when the stack isn't measurable yet
+	// (clientWidth 0 before first layout / in jsdom) — a sane phone-width default.
+	const FALLBACK_WIDTH_PX = 320;
 
 	let stackEl: HTMLDivElement | undefined = $state();
 	let dragging = $state(false);
@@ -81,7 +84,7 @@
 		const el = event.currentTarget as HTMLElement;
 		// On pointercancel the capture is implicitly released; releasing again throws.
 		if (el.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
-		const width = stackEl?.clientWidth || 320;
+		const width = stackEl?.clientWidth || FALLBACK_WIDTH_PX;
 		const outcome = resolveSwipe({ dx: event.clientX - startX, vx: velocity, width });
 		if (outcome === 'next') goNext();
 		else if (outcome === 'prev') goPrev();
@@ -102,22 +105,11 @@
 		aria-roledescription="carousel"
 		aria-label="Builder testimonials"
 		tabindex="0"
-		class={`flex flex-col items-center gap-6 rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-offset-2 ${className}`}
+		class={`flex w-full flex-col items-center gap-6 rounded-card px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-offset-2 ${className}`}
 		onkeydown={onKeydown}
 	>
-		<div class="flex w-full items-center justify-center gap-3 sm:gap-5">
-			<Button
-				variant="secondary"
-				size="md"
-				class="size-11 shrink-0 !p-0"
-				aria-label="Previous testimonial"
-				disabled={count <= 1}
-				onclick={goPrev}
-			>
-				<IconChevronLeft class="size-5" aria-hidden="true" />
-			</Button>
-
-			<div bind:this={stackEl} class="deck-stack w-full max-w-md">
+		<div class="relative w-full max-w-md">
+			<div bind:this={stackEl} class="deck-stack w-full min-w-0 px-1 py-6">
 				{#each visible as card (card.key)}
 					<DeckCard
 						item={card.item}
@@ -133,10 +125,22 @@
 				{/each}
 			</div>
 
+			<!-- Chevrons overlay the card's side edges (Insify pattern) so the card
+			     stays full-width on mobile instead of being squeezed by an in-row layout. -->
 			<Button
-				variant="secondary"
-				size="md"
-				class="size-11 shrink-0 !p-0"
+				variant="soft"
+				size="icon"
+				class="absolute top-1/2 left-0 z-40 -translate-x-1/2 -translate-y-1/2 shadow-card"
+				aria-label="Previous testimonial"
+				disabled={count <= 1}
+				onclick={goPrev}
+			>
+				<IconChevronLeft class="size-5" aria-hidden="true" />
+			</Button>
+			<Button
+				variant="soft"
+				size="icon"
+				class="absolute top-1/2 right-0 z-40 translate-x-1/2 -translate-y-1/2 shadow-card"
 				aria-label="Next testimonial"
 				disabled={count <= 1}
 				onclick={goNext}
@@ -145,18 +149,27 @@
 			</Button>
 		</div>
 
-		<p aria-live="polite" class="text-sm font-medium text-ink-soft">
-			Testimonial {index + 1} of {count}
-		</p>
+		<div class="flex items-center gap-2" aria-hidden="true">
+			{#each dots as dot (dot)}
+				<span
+					class={`size-2 rounded-full transition-colors duration-300 ${
+						dot === index ? 'bg-accent-strong' : 'bg-neutral-300'
+					}`}
+				></span>
+			{/each}
+		</div>
+		<p aria-live="polite" class="sr-only">Testimonial {index + 1} of {count}</p>
 	</div>
 {/if}
 
 <style>
+	/* Cards share a single grid cell to overlap; each DeckCard sets its own
+	   `grid-area: 1 / 1` (scoped CSS can't reach the child component's root). */
 	.deck-stack {
 		display: grid;
+		/* A single explicit column (not the default `auto`) so cards fill the
+		   container and wrap, instead of sizing to the quote's max-content width. */
+		grid-template-columns: minmax(0, 1fr);
 		place-items: stretch;
-	}
-	.deck-stack > * {
-		grid-area: 1 / 1;
 	}
 </style>

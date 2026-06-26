@@ -2,8 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
-	type Variant = 'primary' | 'secondary' | 'ghost';
-	type Size = 'sm' | 'md' | 'lg';
+	type Variant = 'primary' | 'secondary' | 'ghost' | 'soft';
+	type Size = 'sm' | 'md' | 'lg' | 'icon';
 
 	// Extend native button + anchor attributes so aria-*, data-*, disabled, rel,
 	// target, etc. pass through type-checked. Renders <a> when `href` is set.
@@ -36,13 +36,16 @@
 	const variants: Record<Variant, string> = {
 		primary: 'bg-accent-strong text-white shadow-card hover:bg-accent-strong-hover',
 		secondary: 'border border-neutral-300 text-ink hover:bg-neutral-50',
-		ghost: 'text-ink hover:bg-neutral-100'
+		ghost: 'text-ink hover:bg-neutral-100',
+		soft: 'bg-accent-soft text-accent-strong hover:bg-accent-strong hover:text-white'
 	};
 
 	const sizes: Record<Size, string> = {
 		sm: 'px-4 py-2 text-sm',
 		md: 'px-6 py-2.5 text-sm',
-		lg: 'px-8 py-3.5 text-base'
+		lg: 'px-8 py-3.5 text-base',
+		// Square, padding-free target for a single icon (e.g. carousel chevrons).
+		icon: 'size-11 p-0'
 	};
 
 	const classes = $derived(`${base} ${variants[variant]} ${sizes[size]} ${className}`);
