@@ -2,7 +2,7 @@
 
 _Working doc for **WP-1**. Durable decisions → Chain (`pb capture`). Specs → `pb get`, not copies here._
 
-**Last updated:** 2026-06-25 (paid model handoff)
+**Last updated:** 2026-06-26 (launch prep batch)
 
 ---
 
@@ -31,9 +31,10 @@ _Working doc for **WP-1**. Durable decisions → Chain (`pb capture`). Specs →
 
 ## Phase 1 — Chain hygiene
 
-- [ ] **Randy:** promote drafts in Studio (+ DEC-5, DEC-9, GLO-9, STR-6–9, INS-11, INS-15)
+- [x] Design-system stack promoted (DEC-11, STD-1/2/3, BR-2, DEC-16) + onboarding contract (STD-5, DEC-17..21)
+- [x] Consent proposals accepted (BR-1→WP-1, ROL-2→DEC-11, BR-2→DEC-11)
 - [x] INS-8 eval pass · Tier 1 **21/21** · handshake run
-- [ ] **Randy:** Tier 3 (PAT-4) · BR-1 governs WP-1 approval
+- [ ] **Randy:** Tier 3 (PAT-4)
 
 ---
 
@@ -49,6 +50,7 @@ _Working doc for **WP-1**. Durable decisions → Chain (`pb capture`). Specs →
 ## Phase 3 — Community harness
 
 - [x] FLO-1 onboarding · INS-6 Cursor harness · LAND-7/8/9 tool landscape
+- [x] Onboarding guides shipped (`02. Areas/Onboarding/` — Play Room + design system, STD-5)
 
 ---
 
@@ -57,7 +59,11 @@ _Working doc for **WP-1**. Durable decisions → Chain (`pb capture`). Specs →
 - [x] STR-2 enemy · INS-9 principles (+ **INS-16** CTA supersession note if captured)
 - [x] STR-6–9 landing/CTA drafts on Chain (`[PRICE_TBD]` where needed)
 - [x] INS-15 copy guardrail · INS-10 flagship · PAT-6 sourceRef · AUD-1 ICP
-- [ ] **Blocked:** domain name (DEC-7)
+- [x] Opening post draft (WP-2) · launch decision brief (domain/naming/pricing options)
+- [x] TEN-3/4/5 resolved (accent-strong tokens, Play Room voice, no fake testimonials)
+- [x] **DEC-24:** launch domain **funcode.club** (`pb get DEC-24`) — funcode.io unavailable
+- [x] **DEC-23:** FunCode umbrella brand; Play Room = practice (`pb get DEC-23`)
+- [ ] Register DNS + point launch surface to **funcode.club**
 - [ ] **Blocked:** checkout flows until TEN-2 closes (community join stays free)
 
 ---
@@ -71,10 +77,10 @@ _Working doc for **WP-1**. Durable decisions → Chain (`pb capture`). Specs →
 
 ## Still needs Randy
 
-1. **Price points** — Product Brain beta + first paid service (closes **TEN-2**)
-2. **Domain name** — **DEC-7**
-3. **Studio promote** all drafts
-4. **Tier 3** eval · **BR-1 governs WP-1**
+1. **Register funcode.club** — DNS + deploy (**DEC-24**)
+2. **Opening post** — ratify [opening-post-draft.md](./opening-post-draft.md) (**WP-2**)
+3. **Price points** — GA only, non-blocking (**TEN-2**, **DEC-10**)
+4. **Tier 3** eval (**PAT-4**)
 
 ```bash
 pb get DEC-5 DEC-9 STR-6 STR-7 STR-8 STR-9 INS-15 TEN-2

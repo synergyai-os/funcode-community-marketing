@@ -4,9 +4,9 @@ import {
 	prevIndex,
 	clampIndex,
 	resolveSwipe,
-	depthTransform,
 	dragTilt,
 	fanRotation,
+	slotLayout,
 	STACK_GEOMETRY
 } from './testimonial-deck';
 
@@ -114,35 +114,6 @@ describe('resolveSwipe', () => {
 	});
 });
 
-describe('depthTransform', () => {
-	it('leaves the front card (depth 0) untouched', () => {
-		expect(depthTransform(0)).toEqual({ translateY: 0, scale: 1, opacity: 1 });
-	});
-
-	it('raises, shrinks and fades cards as depth grows', () => {
-		const back = depthTransform(2);
-		expect(back.translateY).toBe(-2 * STACK_GEOMETRY.liftPx);
-		expect(back.scale).toBeCloseTo(1 - 2 * STACK_GEOMETRY.scaleStep);
-		expect(back.opacity).toBeCloseTo(1 - 2 * STACK_GEOMETRY.opacityStep);
-	});
-
-	it('interpolates smoothly at a fractional, spring-driven depth', () => {
-		const mid = depthTransform(0.5);
-		expect(mid.scale).toBeCloseTo(1 - 0.5 * STACK_GEOMETRY.scaleStep);
-		expect(mid.opacity).toBeCloseTo(1 - 0.5 * STACK_GEOMETRY.opacityStep);
-	});
-
-	it('clamps scale and opacity to a physical range for deep stacks', () => {
-		const deep = depthTransform(100);
-		expect(deep.scale).toBe(0);
-		expect(deep.opacity).toBe(0);
-	});
-
-	it('clamps opacity to 1 for an overshooting negative depth', () => {
-		expect(depthTransform(-0.3).opacity).toBe(1);
-	});
-});
-
 describe('fanRotation', () => {
 	it('keeps the front card flat', () => {
 		expect(fanRotation(0)).toBe(0);
@@ -151,6 +122,36 @@ describe('fanRotation', () => {
 	it('fans peeked cards to alternating sides', () => {
 		expect(fanRotation(1)).toBe(-STACK_GEOMETRY.fanDeg);
 		expect(fanRotation(2)).toBe(STACK_GEOMETRY.fanDeg);
+	});
+});
+
+describe('slotLayout', () => {
+	const depth = 3;
+
+	it('places the front card flat at the origin', () => {
+		const front = slotLayout(0, depth);
+		expect(front.y).toBeCloseTo(0);
+		expect(front.z).toBeCloseTo(0);
+		expect(front.rotate).toBe(0);
+	});
+
+	it('lifts and recedes deeper cards by one step each', () => {
+		expect(slotLayout(1, depth)).toEqual({
+			y: -STACK_GEOMETRY.liftPx,
+			z: -STACK_GEOMETRY.depthZ,
+			rotate: fanRotation(1)
+		});
+	});
+
+	it('caps cards beyond the visible depth at the back slot', () => {
+		const maxDepth = depth - 1;
+		const capped = {
+			y: -maxDepth * STACK_GEOMETRY.liftPx,
+			z: -maxDepth * STACK_GEOMETRY.depthZ,
+			rotate: fanRotation(maxDepth)
+		};
+		expect(slotLayout(maxDepth, depth)).toEqual(capped);
+		expect(slotLayout(maxDepth + 5, depth)).toEqual(capped);
 	});
 });
 

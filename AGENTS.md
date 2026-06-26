@@ -56,6 +56,17 @@ UI is governed: **derive from the design system, never bespoke.**
 
 ---
 
+## Deployment (web/ → Railway)
+
+Deployment is governed and owned by **Deployment (ROL-3)**. **Before any deploy, adapter/build/port/domain change, or "won't build / down" diagnosis**, retrieve and obey: `pb get ROL-3 STD-7 INS-23`.
+
+- Three silent traps (detail + build-log error strings in STD-7): Railway **Root Directory = `web`** (repo root has no `package.json`), **`@sveltejs/adapter-node`** (never `adapter-auto`), and service **`PORT=8080`**. Root Directory + PORT are Railway dashboard/env settings with no repo footprint.
+- If something's missing, **extend STD-7** and capture under Deployment (ROL-3) — never a one-off.
+- Manual-deploy escape hatch: from inside `web/`, `railway up . --path-as-root`; smoke check `curl -sI https://funcode.club` → 200.
+- Enforced by a committed Cursor hook (`.cursor/hooks/deploy-gate.sh`, `beforeShellExecution`): deploy/infra commands (`railway|vercel|netlify|wrangler|flyctl|convex deploy|git push`) trigger an **ask** with this checklist before running. Use that prompt as the trigger to retrieve `pb get ROL-3 STD-7 INS-23`; extend the hook when new deploy-command families appear.
+
+---
+
 ## Keeping these files in sync
 
 - **`AGENTS.md` (this file) is canonical.** Edit governance/agent guidance here first.

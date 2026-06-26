@@ -27,38 +27,27 @@ export function prevIndex(count: number, index: number): number {
 }
 
 /**
- * Stack geometry — the magnitudes that shape the peeked card stack. These are
- * runtime transform values (px / unitless), not themable design tokens, so they
- * live here as named constants rather than in Tailwind `@theme`.
+ * Stack geometry — the magnitudes that shape the physical card stack. The deck
+ * is rendered in a real 3D space (CSS `perspective` + `preserve-3d`), so depth
+ * is expressed as a `translateZ` recede rather than a fake scale: a card sent to
+ * the back travels *through* the others and is occluded by them, like a real
+ * card dealt to the bottom. These are runtime transform values (px / deg), not
+ * themable design tokens, so they live here rather than in Tailwind `@theme`.
  */
 export const STACK_GEOMETRY = {
-	/** Vertical offset per depth step, in px — peeked cards rise behind the front. */
-	liftPx: 7,
-	/** Scale removed per depth step (deeper cards are smaller). */
-	scaleStep: 0.04,
-	/** Opacity removed per depth step — kept low so peeked cards stay crisp. */
-	opacityStep: 0.05,
-	/** Fan rotation magnitude for peeked cards, in degrees. */
-	fanDeg: 5,
+	/** Vertical peek per depth step, in px — cards behind rise so their top edge shows. */
+	liftPx: 16,
+	/** 3D recede per depth step, in px — perspective shrinks + occludes deeper cards. */
+	depthZ: 84,
+	/** Resting fan per depth step, in degrees — a tidy, barely-there splay. */
+	fanDeg: 2,
+	/** Extra lift per depth step on hover, in px — the deck "opens" to reveal the stack. */
+	hoverSpreadPx: 9,
+	/** Fan multiplier on hover — the splay widens so each story reads as its own card. */
+	hoverFanScale: 3,
 	/** Larger divisor = gentler tilt while dragging. */
 	dragRotationDivisor: 40
 } as const;
-
-export type CardTransform = { translateY: number; scale: number; opacity: number };
-
-/**
- * Resolve a stack depth into a card transform. `depth` may be fractional and
- * negative while a spring animates a card between slots, so scale and opacity
- * are clamped to stay physically sane.
- */
-export function depthTransform(depth: number): CardTransform {
-	return {
-		// `+ 0` normalises the `-0` that `-depth * lift` yields at depth 0.
-		translateY: -depth * STACK_GEOMETRY.liftPx + 0,
-		scale: Math.max(0, 1 - depth * STACK_GEOMETRY.scaleStep),
-		opacity: Math.min(1, Math.max(0, 1 - depth * STACK_GEOMETRY.opacityStep))
-	};
-}
 
 /**
  * Fan rotation (degrees) for a card at a given stack slot. The front card sits
@@ -67,6 +56,25 @@ export function depthTransform(depth: number): CardTransform {
 export function fanRotation(offset: number): number {
 	if (offset <= 0) return 0;
 	return (offset % 2 === 1 ? -1 : 1) * STACK_GEOMETRY.fanDeg;
+}
+
+/** The resting 3D transform of a card at `slot`, used as the spring target. */
+export type SlotLayout = { y: number; z: number; rotate: number };
+
+/**
+ * Resting transform for a card at a given stack slot. Slots deeper than
+ * `visibleDepth - 1` pile at the back slot (so a large deck still reads as a
+ * tidy few-card stack). `y` lifts peeked cards up so their top edge shows, `z`
+ * recedes them into the 3D stage, and `rotate` gives the gentle fan.
+ */
+export function slotLayout(slot: number, visibleDepth: number): SlotLayout {
+	const maxDepth = Math.max(visibleDepth - 1, 0);
+	const depth = Math.min(Math.max(slot, 0), maxDepth);
+	return {
+		y: -depth * STACK_GEOMETRY.liftPx,
+		z: -depth * STACK_GEOMETRY.depthZ,
+		rotate: fanRotation(depth)
+	};
 }
 
 /** Tilt (degrees) for the active card dragged `x` px horizontally. */

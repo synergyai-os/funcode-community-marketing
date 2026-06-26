@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/deploy-gate.sh",
+        "matcher": "railway|vercel|netlify|wrangler|flyctl|convex deploy|git push"
+      }
+    ]
+  }
+}

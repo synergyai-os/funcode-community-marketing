@@ -4,6 +4,47 @@ Append new items to the **top**. Schema and rules in [`README.md`](./README.md).
 
 ---
 
+## FB-011 — `pb proposals --json` omits proposal `id`; wrong `pb accept` arg returns opaque INTERNAL
+- **Date:** 2026-06-26
+- **Type:** bug
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** Randy asked to ratify the open ROL-3 governs STD-7 consent proposal. Agent ran `pb proposals` (JSON) — one open proposal, but no `id` field in the payload. Tried `pb accept "create_governs_relation:jx72dqnseryznefhch3gcfswh989d5eb"` using `proposedOperation` from JSON → `{"error":"Internal server error","code":"INTERNAL"}`. `pb proposals --pretty` then showed `ID: md77g3zxdktf7q80ev9rkb2m3d89cy5r`; `pb accept --auto` succeeded.
+- **Detail:** (1) JSON output should include the same `id` field that `--pretty` prints, so scripted/agents can call `pb accept <id>` without guessing. (2) Passing `proposedOperation` as the accept arg should fail with a clear message (unknown proposal id), not INTERNAL. (3) Optional: `pb proposals` hint line in default JSON mode ("use --pretty or see id field") — related to FB-006 session-close nudge for pending consent proposals.
+- **PB response:** —
+
+## FB-010 — No nudge to retrieve when a new task arrives mid-session → agent rediscovered known Chain knowledge
+- **Date:** 2026-06-26
+- **Type:** wish
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** A live Railway deploy failure for funcode.club. The agent went straight into reading build logs and fixed it (adapter-node, Root Directory=`web`, PORT 8080), but never ran `pb orient --task` / `pb search` first — so it **rediscovered** the deploy pipeline already captured in `INS-23` instead of retrieving it. The fixes were captured afterward as `STD-7` + `ROL-3 Deployment`.
+- **Detail:** The *Retrieve* in Retrieve→Capture→Retrieve depends on the agent choosing to orient when a task appears **after** the session has already started. `pb orient -b` runs at startup, but a new mid-session task ("fix the deploy") triggers nothing. Wish: (1) a lightweight "new task detected → did you `pb orient --task`?" nudge, or (2) handshake/orient surfacing domain-relevant standards (e.g. a `deployment` domain) more prominently, or (3) a per-domain "retrieve before infra/deploy work" trigger. Root cause is that the retrieval rule is *passive text* the agent must choose to honor — it fails precisely under task urgency, when attention is on the visible fix.
+- **Mitigation (FunCode-side):** (a) `CLAUDE.md` + `AGENTS.md` Deployment pointer (`pb get ROL-3 STD-7 INS-23`); and (b) a **deterministic Cursor hook** — `.cursor/hooks/deploy-gate.sh` (`beforeShellExecution`, committed to the repo) that fires on `railway|vercel|netlify|wrangler|flyctl|convex deploy|git push` and returns `permission: ask` with the ROL-3/STD-7 pre-flight checklist. This converts the passive rule into an enforced checkpoint at the command boundary, so the Chain is retrieved *before* a deploy runs rather than rediscovered after. Still leaves the broader gap open: the hook only covers shell-command-shaped deploy work, not general "new task → orient" — a harness-level orient nudge would generalize it.
+- **PB response:** —
+
+## FB-009 — `pb promote` requires relevanceScope on standards and business rules
+- **Date:** 2026-06-26
+- **Type:** wish
+- **For:** agent
+- **Status:** new
+- **Priority:** —
+- **Context:** Promoting STD-1/2/3 and BR-2 failed until we ran `pb update <ID> -f relevanceScope=org`. Error message was clear but easy to miss when batch-promoting after capture.
+- **Detail:** Wish: (1) capture-time default `relevanceScope=org` for FunCode workspace standards/BRs, or (2) include relevanceScope in `pb fields` required hint on promote failure, or (3) accept `-f relevanceScope=org` on `pb capture -c standards`.
+- **PB response:** —
+
+## FB-008 — `pb capture -- -l ID -t type` relations silently dropped; use `pb relate`
+- **Date:** 2026-06-26
+- **Type:** bug
+- **For:** agent
+- **Status:** new
+- **Priority:** —
+- **Context:** Creating atom-sized onboarding decisions (DEC-17..21) with trailing `-- -l DEC-3 -t related_to` on `pb capture`; entries saved but `"relations":[]` until we ran `pb relate` separately.
+- **Detail:** Expected capture-time linking from `-- -l <id> -t <type>` flags. Actual: entries created, relations empty. Workaround: `pb relate <from-id> <type> <to-id> --if-missing` after capture. Wish: either wire `-- -l`/`-t` on capture or fail loudly when relation args are ignored.
+- **PB response:** —
+
 ## FB-007 — A `pb refile` helper for moving an entry between collections
 - **Date:** 2026-06-26
 - **Type:** idea

@@ -25,6 +25,8 @@ Working notes, drafts, and human-readable scratch during active delivery. When s
 | Doc | Purpose |
 |-----|---------|
 | [launch-checklist.md](./launch-checklist.md) | Launch phases — check off here, commit decisions on Chain |
+| [opening-post-draft.md](./opening-post-draft.md) | WP-2 opening post — draft for founder ratification |
+| [launch-decision-brief.md](./launch-decision-brief.md) | Domain, naming, pricing options — Randy decides |
 
 ## Key Chain queries
 

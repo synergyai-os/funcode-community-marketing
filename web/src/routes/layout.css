@@ -16,6 +16,10 @@
 	--radius-card: 1rem;
 
 	--shadow-card: 0 10px 30px -12px rgb(255 87 34 / 0.25);
+	/* Elevation cue for a card lifted off the deck (e.g. mid-deal): the warm card
+	   shadow deepened and spread, grounded by a soft neutral ambient layer. */
+	--shadow-card-lifted:
+		0 30px 60px -18px rgb(255 87 34 / 0.4), 0 12px 24px -12px rgb(11 11 15 / 0.22);
 }
 
 @media (prefers-reduced-motion: no-preference) {

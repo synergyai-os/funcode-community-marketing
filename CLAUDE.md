@@ -140,6 +140,17 @@ UI work in `web/` is governed by the Chain. **Before building or editing UI**, r
 
 ---
 
+## Deployment (web/ → Railway) — retrieve before any infra change
+
+Deployment is governed by the Chain and owned by **Deployment (`ROL-3`)**. **Before any deploy, redeploy, adapter/build/port/domain change, or "site won't build / is down" diagnosis**, retrieve and obey: `pb get ROL-3 STD-7 INS-23`.
+
+- **The three silent traps (full detail + error strings in `STD-7`):** Railway service **Root Directory = `web`** (repo root has no `package.json`), **`@sveltejs/adapter-node`** — never `adapter-auto`, and service **`PORT=8080`** (matches the funcode.club container port). Root Directory + PORT are Railway dashboard/env settings with **no repo footprint** — the easiest to forget.
+- **Update, don't improvise:** new infra knowledge → extend `STD-7` and capture under **Deployment (`ROL-3`)**, never a one-off (`BR-2` spirit; wanting to build is not authorization — `BR-1`).
+- **Manual-deploy escape hatch:** from inside `web/`, `railway up . --path-as-root`. Smoke check: `curl -sI https://funcode.club` → 200.
+- **Enforced, not just advised:** a committed Cursor hook (`.cursor/hooks/deploy-gate.sh`, `beforeShellExecution`) fires on `railway|vercel|netlify|wrangler|flyctl|convex deploy|git push` and **asks** with this checklist before the command runs. Treat that prompt as the cue to actually run `pb get ROL-3 STD-7 INS-23` — don't click through it. New deploy-command families → add to the hook matcher + script.
+
+---
+
 ## Eval — retrieve specs from Chain
 
 Do **not** use this file as an answer key. Run:

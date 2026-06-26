@@ -9,60 +9,62 @@ const items = [
 	{ quote: 'Third quote.', name: 'Alan Turing', role: 'Maker' }
 ];
 
-/** The quote shown by the active (non-aria-hidden) card. */
+/** The quote shown by the active (non-aria-hidden) card at rest. */
 function activeQuote(container: HTMLElement): string {
-	const card = container.querySelector('.deck-stack > div:not([aria-hidden])');
+	const card = container.querySelector('.deck-stage > div:not([aria-hidden])');
 	return card?.querySelector('blockquote')?.textContent?.trim() ?? '';
+}
+
+/**
+ * The active card swaps with a cross-transition, so the outgoing card lingers in
+ * the DOM mid-animation; assert navigation through the single, synchronous
+ * aria-live position counter instead of the transient card nodes.
+ */
+function positionLabel(): string {
+	return screen.getByText(/^Testimonial \d+ of \d+$/).textContent?.trim() ?? '';
 }
 
 describe('TestimonialDeck', () => {
 	it('renders the first testimonial as the active card on mount', () => {
 		const { container } = render(TestimonialDeck, { props: { items } });
 		expect(activeQuote(container)).toBe('First quote.');
-		expect(screen.getByText('Ada Lovelace')).toBeInTheDocument();
+		expect(positionLabel()).toBe('Testimonial 1 of 3');
 	});
 
 	it('advances to the next testimonial when Next is clicked', async () => {
-		const { container } = render(TestimonialDeck, { props: { items } });
+		render(TestimonialDeck, { props: { items } });
 		await fireEvent.click(screen.getByLabelText('Next testimonial'));
-		expect(activeQuote(container)).toBe('Second quote.');
+		expect(positionLabel()).toBe('Testimonial 2 of 3');
 	});
 
 	it('wraps from the last testimonial back to the first via Next', async () => {
-		const { container } = render(TestimonialDeck, { props: { items } });
+		render(TestimonialDeck, { props: { items } });
 		const next = screen.getByLabelText('Next testimonial');
 		await fireEvent.click(next);
 		await fireEvent.click(next);
 		await fireEvent.click(next);
-		expect(activeQuote(container)).toBe('First quote.');
+		expect(positionLabel()).toBe('Testimonial 1 of 3');
 	});
 
 	it('wraps to the last testimonial when Prev is clicked from the first', async () => {
-		const { container } = render(TestimonialDeck, { props: { items } });
+		render(TestimonialDeck, { props: { items } });
 		await fireEvent.click(screen.getByLabelText('Previous testimonial'));
-		expect(activeQuote(container)).toBe('Third quote.');
+		expect(positionLabel()).toBe('Testimonial 3 of 3');
 	});
 
 	it('navigates with ArrowRight and ArrowLeft when the group is focused', async () => {
-		const { container } = render(TestimonialDeck, { props: { items } });
+		render(TestimonialDeck, { props: { items } });
 		const group = screen.getByRole('group');
 		await fireEvent.keyDown(group, { key: 'ArrowRight' });
-		expect(activeQuote(container)).toBe('Second quote.');
+		expect(positionLabel()).toBe('Testimonial 2 of 3');
 		await fireEvent.keyDown(group, { key: 'ArrowLeft' });
-		expect(activeQuote(container)).toBe('First quote.');
-	});
-
-	it('announces the active position in a polite live region and updates it', async () => {
-		render(TestimonialDeck, { props: { items } });
-		expect(screen.getByText('Testimonial 1 of 3')).toBeInTheDocument();
-		await fireEvent.click(screen.getByLabelText('Next testimonial'));
-		expect(screen.getByText('Testimonial 2 of 3')).toBeInTheDocument();
+		expect(positionLabel()).toBe('Testimonial 1 of 3');
 	});
 
 	it('hides the peeked background cards from assistive tech', () => {
 		const { container } = render(TestimonialDeck, { props: { items } });
-		const cards = container.querySelectorAll('.deck-stack > div');
-		const hidden = container.querySelectorAll('.deck-stack > div[aria-hidden="true"]');
+		const cards = container.querySelectorAll('.deck-stage > div');
+		const hidden = container.querySelectorAll('.deck-stage > div[aria-hidden="true"]');
 		expect(cards.length).toBe(3);
 		expect(hidden.length).toBe(2);
 	});
@@ -74,25 +76,26 @@ describe('TestimonialDeck', () => {
 
 	it('advances to the next card on a confident leftward drag', async () => {
 		const { container } = render(TestimonialDeck, { props: { items } });
-		const card = container.querySelector('.deck-stack > div:not([aria-hidden])') as HTMLElement;
+		const card = container.querySelector('.deck-stage > div:not([aria-hidden])') as HTMLElement;
 		await fireEvent.pointerDown(card, { clientX: 300, pointerId: 1 });
 		await fireEvent.pointerMove(card, { clientX: 60, pointerId: 1 });
 		await fireEvent.pointerUp(card, { clientX: 60, pointerId: 1 });
-		expect(activeQuote(container)).toBe('Second quote.');
+		expect(positionLabel()).toBe('Testimonial 2 of 3');
 	});
 
 	it('snaps back without navigating on a small slow drag', async () => {
 		const { container } = render(TestimonialDeck, { props: { items } });
-		const card = container.querySelector('.deck-stack > div:not([aria-hidden])') as HTMLElement;
+		const card = container.querySelector('.deck-stage > div:not([aria-hidden])') as HTMLElement;
+		// No pointermove → zero velocity, so this exercises the distance gate alone:
+		// a 10px release is well under the threshold and must not navigate.
 		await fireEvent.pointerDown(card, { clientX: 300, pointerId: 1 });
-		await fireEvent.pointerMove(card, { clientX: 290, pointerId: 1 });
 		await fireEvent.pointerUp(card, { clientX: 290, pointerId: 1 });
-		expect(activeQuote(container)).toBe('First quote.');
+		expect(positionLabel()).toBe('Testimonial 1 of 3');
 	});
 
 	it('does not throw when a drag is cancelled', async () => {
 		const { container } = render(TestimonialDeck, { props: { items } });
-		const card = container.querySelector('.deck-stack > div:not([aria-hidden])') as HTMLElement;
+		const card = container.querySelector('.deck-stage > div:not([aria-hidden])') as HTMLElement;
 		await fireEvent.pointerDown(card, { clientX: 300, pointerId: 1 });
 		await expect(fireEvent.pointerCancel(card, { clientX: 300, pointerId: 1 })).resolves.toBe(true);
 	});
@@ -101,19 +104,19 @@ describe('TestimonialDeck', () => {
 		const { container } = render(TestimonialDeck, { props: { items: [items[0]] } });
 		expect(screen.getByLabelText('Previous testimonial')).toBeDisabled();
 		expect(screen.getByLabelText('Next testimonial')).toBeDisabled();
-		expect(container.querySelectorAll('.deck-stack > div').length).toBe(1);
-		expect(container.querySelectorAll('.deck-stack > div[aria-hidden="true"]').length).toBe(0);
+		expect(container.querySelectorAll('.deck-stage > div').length).toBe(1);
+		expect(container.querySelectorAll('.deck-stage > div[aria-hidden="true"]').length).toBe(0);
 	});
 
 	it('ignores keyboard navigation for a one-item deck', async () => {
-		const { container } = render(TestimonialDeck, { props: { items: [items[0]] } });
+		render(TestimonialDeck, { props: { items: [items[0]] } });
 		await fireEvent.keyDown(screen.getByRole('group'), { key: 'ArrowRight' });
-		expect(activeQuote(container)).toBe('First quote.');
+		expect(positionLabel()).toBe('Testimonial 1 of 1');
 	});
 
 	it('peeks exactly one background card for a two-item deck', () => {
 		const { container } = render(TestimonialDeck, { props: { items: items.slice(0, 2) } });
-		expect(container.querySelectorAll('.deck-stack > div').length).toBe(2);
-		expect(container.querySelectorAll('.deck-stack > div[aria-hidden="true"]').length).toBe(1);
+		expect(container.querySelectorAll('.deck-stage > div').length).toBe(2);
+		expect(container.querySelectorAll('.deck-stage > div[aria-hidden="true"]').length).toBe(1);
 	});
 });
