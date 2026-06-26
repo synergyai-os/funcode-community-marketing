@@ -108,8 +108,11 @@
 		class={`flex w-full flex-col items-center gap-6 rounded-card px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-offset-2 ${className}`}
 		onkeydown={onKeydown}
 	>
-		<div class="relative w-full max-w-md">
-			<div bind:this={stackEl} class="deck-stack w-full min-w-0 px-1 py-6">
+		<!-- px-7 reserves a side gutter so the absolutely-positioned chevrons hug the
+		     card's rounded corner (Insify pattern) without covering the quote text
+		     or overflowing a narrow viewport. -->
+		<div class="relative w-full max-w-md px-7">
+			<div bind:this={stackEl} class="deck-stack w-full min-w-0 py-6">
 				{#each visible as card (card.key)}
 					<DeckCard
 						item={card.item}
@@ -130,7 +133,7 @@
 			<Button
 				variant="soft"
 				size="icon"
-				class="absolute top-1/2 left-0 z-40 -translate-x-1/2 -translate-y-1/2 shadow-card"
+				class="absolute inset-y-0 left-0 z-40 my-auto shadow-card"
 				aria-label="Previous testimonial"
 				disabled={count <= 1}
 				onclick={goPrev}
@@ -140,7 +143,7 @@
 			<Button
 				variant="soft"
 				size="icon"
-				class="absolute top-1/2 right-0 z-40 translate-x-1/2 -translate-y-1/2 shadow-card"
+				class="absolute inset-y-0 right-0 z-40 my-auto shadow-card"
 				aria-label="Next testimonial"
 				disabled={count <= 1}
 				onclick={goNext}

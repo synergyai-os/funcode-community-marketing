@@ -30,8 +30,12 @@
 		...rest
 	}: Props = $props();
 
+	// The hover lift lives on the text sizes, not here: it writes the `translate`
+	// property, which would clobber positioning transforms on icon/overlay
+	// buttons (e.g. a vertically-centred carousel chevron). Icon buttons use a
+	// `scale` affordance instead — an independent property in Tailwind v4.
 	const base =
-		'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 hover:-translate-y-0.5';
+		'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2';
 
 	const variants: Record<Variant, string> = {
 		primary: 'bg-accent-strong text-white shadow-card hover:bg-accent-strong-hover',
@@ -41,11 +45,12 @@
 	};
 
 	const sizes: Record<Size, string> = {
-		sm: 'px-4 py-2 text-sm',
-		md: 'px-6 py-2.5 text-sm',
-		lg: 'px-8 py-3.5 text-base',
+		sm: 'px-4 py-2 text-sm hover:-translate-y-0.5',
+		md: 'px-6 py-2.5 text-sm hover:-translate-y-0.5',
+		lg: 'px-8 py-3.5 text-base hover:-translate-y-0.5',
 		// Square, padding-free target for a single icon (e.g. carousel chevrons).
-		icon: 'size-11 p-0'
+		// Lifts via `scale` (not `translate`) so it stays safe when positioned.
+		icon: 'size-11 p-0 hover:scale-105'
 	};
 
 	const classes = $derived(`${base} ${variants[variant]} ${sizes[size]} ${className}`);
