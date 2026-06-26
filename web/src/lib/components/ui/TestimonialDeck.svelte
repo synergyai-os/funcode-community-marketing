@@ -1,25 +1,22 @@
 <script lang="ts">
-	import { Spring } from 'svelte/motion';
+	import { prefersReducedMotion } from 'svelte/motion';
 	import Button from './Button.svelte';
-	import Testimonial from './Testimonial.svelte';
+	import DeckCard from './DeckCard.svelte';
 	import { nextIndex, prevIndex, resolveSwipe } from './testimonial-deck';
 	import IconChevronLeft from '~icons/lucide/chevron-left';
 	import IconChevronRight from '~icons/lucide/chevron-right';
 
 	type Item = { quote: string; name: string; role: string };
 
-	// Stack depth tuning (runtime transforms, so they can't be tokens — named for intent).
-	const PEEK_LIFT_PX = 14;
-	const PEEK_SCALE_STEP = 0.06;
-	const PEEK_OPACITY_STEP = 0.18;
-	const DRAG_ROTATION_DIVISOR = 40;
-
 	let { items, class: className = '' }: { items: Item[]; class?: string } = $props();
 
 	const count = $derived(items.length);
 
 	let index = $state(0);
-	let reducedMotion = $state(false);
+	// Raw horizontal drag offset (px) of the active card; the card's own spring
+	// turns this into smooth motion. Reset to 0 on every commit.
+	let dragX = $state(0);
+	const reducedMotion = $derived(prefersReducedMotion.current);
 
 	// Visible stack: the active card plus up to two peeked cards behind it.
 	const visible = $derived(
@@ -29,8 +26,6 @@
 		})
 	);
 
-	const x = new Spring(0, { stiffness: 0.15, damping: 0.8 });
-
 	let stackEl: HTMLDivElement | undefined = $state();
 	let dragging = $state(false);
 	let startX = 0;
@@ -38,14 +33,9 @@
 	let lastT = 0;
 	let velocity = 0;
 
-	function setOffset(px: number) {
-		if (reducedMotion) x.set(px, { instant: true });
-		else x.target = px;
-	}
-
 	function goTo(target: number) {
 		index = target;
-		setOffset(0);
+		dragX = 0;
 	}
 
 	function goNext() {
@@ -82,7 +72,7 @@
 		if (dt > 0) velocity = (event.clientX - lastX) / dt;
 		lastX = event.clientX;
 		lastT = event.timeStamp;
-		setOffset(event.clientX - startX);
+		dragX = event.clientX - startX;
 	}
 
 	function onPointerUp(event: PointerEvent) {
@@ -95,26 +85,7 @@
 		const outcome = resolveSwipe({ dx: event.clientX - startX, vx: velocity, width });
 		if (outcome === 'next') goNext();
 		else if (outcome === 'prev') goPrev();
-		else setOffset(0);
-	}
-
-	$effect(() => {
-		const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-		reducedMotion = query.matches;
-		const onChange = (event: MediaQueryListEvent) => (reducedMotion = event.matches);
-		query.addEventListener('change', onChange);
-		return () => query.removeEventListener('change', onChange);
-	});
-
-	function cardStyle(offset: number) {
-		if (offset === 0) {
-			const angle = x.current / DRAG_ROTATION_DIVISOR;
-			return `transform: translateX(${x.current}px) rotate(${angle}deg); z-index: 30;`;
-		}
-		const lift = offset * PEEK_LIFT_PX;
-		const scale = 1 - offset * PEEK_SCALE_STEP;
-		const opacity = 1 - offset * PEEK_OPACITY_STEP;
-		return `transform: translateY(${lift}px) scale(${scale}); opacity: ${opacity}; z-index: ${30 - offset};`;
+		else dragX = 0;
 	}
 </script>
 
@@ -148,19 +119,17 @@
 
 			<div bind:this={stackEl} class="deck-stack w-full max-w-md">
 				{#each visible as card (card.key)}
-					<div
-						class={card.offset === 0
-							? 'cursor-grab touch-pan-y select-none active:cursor-grabbing'
-							: ''}
-						style={cardStyle(card.offset)}
-						aria-hidden={card.offset === 0 ? undefined : true}
+					<DeckCard
+						item={card.item}
+						offset={card.offset}
+						active={card.offset === 0}
+						drag={card.offset === 0 ? dragX : 0}
+						{reducedMotion}
 						onpointerdown={card.offset === 0 ? onPointerDown : undefined}
 						onpointermove={card.offset === 0 ? onPointerMove : undefined}
 						onpointerup={card.offset === 0 ? onPointerUp : undefined}
 						onpointercancel={card.offset === 0 ? onPointerUp : undefined}
-					>
-						<Testimonial quote={card.item.quote} name={card.item.name} role={card.item.role} />
-					</div>
+					/>
 				{/each}
 			</div>
 

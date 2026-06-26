@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { nextIndex, prevIndex, clampIndex, resolveSwipe } from './testimonial-deck';
+import {
+	nextIndex,
+	prevIndex,
+	clampIndex,
+	resolveSwipe,
+	depthTransform,
+	dragTilt,
+	STACK_GEOMETRY
+} from './testimonial-deck';
 
 describe('clampIndex', () => {
 	it('keeps an in-range index unchanged', () => {
@@ -102,5 +110,45 @@ describe('resolveSwipe', () => {
 	it('respects a custom velocity gate', () => {
 		expect(resolveSwipe({ dx: -1, vx: -0.4, width, velocity: 0.3 })).toBe('next');
 		expect(resolveSwipe({ dx: -1, vx: -0.4, width, velocity: 0.9 })).toBe('none');
+	});
+});
+
+describe('depthTransform', () => {
+	it('leaves the front card (depth 0) untouched', () => {
+		expect(depthTransform(0)).toEqual({ translateY: 0, scale: 1, opacity: 1 });
+	});
+
+	it('lifts, shrinks and fades cards as depth grows', () => {
+		const back = depthTransform(2);
+		expect(back.translateY).toBe(2 * STACK_GEOMETRY.liftPx);
+		expect(back.scale).toBeCloseTo(1 - 2 * STACK_GEOMETRY.scaleStep);
+		expect(back.opacity).toBeCloseTo(1 - 2 * STACK_GEOMETRY.opacityStep);
+	});
+
+	it('interpolates smoothly at a fractional, spring-driven depth', () => {
+		const mid = depthTransform(0.5);
+		expect(mid.scale).toBeCloseTo(1 - 0.5 * STACK_GEOMETRY.scaleStep);
+		expect(mid.opacity).toBeCloseTo(1 - 0.5 * STACK_GEOMETRY.opacityStep);
+	});
+
+	it('clamps scale and opacity to a physical range for deep stacks', () => {
+		const deep = depthTransform(100);
+		expect(deep.scale).toBe(0);
+		expect(deep.opacity).toBe(0);
+	});
+
+	it('clamps opacity to 1 for an overshooting negative depth', () => {
+		expect(depthTransform(-0.3).opacity).toBe(1);
+	});
+});
+
+describe('dragTilt', () => {
+	it('is flat at rest', () => {
+		expect(dragTilt(0)).toBe(0);
+	});
+
+	it('tilts opposite directions for opposite drags', () => {
+		expect(dragTilt(-80)).toBeCloseTo(-80 / STACK_GEOMETRY.dragRotationDivisor);
+		expect(dragTilt(80)).toBeCloseTo(80 / STACK_GEOMETRY.dragRotationDivisor);
 	});
 });

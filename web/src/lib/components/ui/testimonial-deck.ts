@@ -23,6 +23,42 @@ export function prevIndex(count: number, index: number): number {
 	return (clampIndex(count, index) + count - 1) % count;
 }
 
+/**
+ * Stack geometry — the magnitudes that shape the peeked card stack. These are
+ * runtime transform values (px / unitless), not themable design tokens, so they
+ * live here as named constants rather than in Tailwind `@theme`.
+ */
+export const STACK_GEOMETRY = {
+	/** Vertical lift added per depth step, in px (deeper cards sit higher). */
+	liftPx: 14,
+	/** Scale removed per depth step (deeper cards are smaller). */
+	scaleStep: 0.06,
+	/** Opacity removed per depth step (deeper cards are fainter). */
+	opacityStep: 0.18,
+	/** Larger divisor = gentler tilt while dragging. */
+	dragRotationDivisor: 40
+} as const;
+
+export type CardTransform = { translateY: number; scale: number; opacity: number };
+
+/**
+ * Resolve a stack depth into a card transform. `depth` may be fractional and
+ * negative while a spring animates a card between slots, so scale and opacity
+ * are clamped to stay physically sane.
+ */
+export function depthTransform(depth: number): CardTransform {
+	return {
+		translateY: depth * STACK_GEOMETRY.liftPx,
+		scale: Math.max(0, 1 - depth * STACK_GEOMETRY.scaleStep),
+		opacity: Math.min(1, Math.max(0, 1 - depth * STACK_GEOMETRY.opacityStep))
+	};
+}
+
+/** Tilt (degrees) for the active card dragged `x` px horizontally. */
+export function dragTilt(x: number): number {
+	return x / STACK_GEOMETRY.dragRotationDivisor;
+}
+
 export type SwipeOutcome = 'next' | 'prev' | 'none';
 
 export type SwipeInput = {
