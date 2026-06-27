@@ -43,45 +43,67 @@
 	const tiltScale = $derived(0.4 + playfulness * 0.8); // resting-pose tilt strength
 	const maxShift = $derived(12 + playfulness * 26); // px of pointer parallax at depth 1
 
-	// ── Drag-to-toss + spring snap-back (shared by both variants) ───────────────
-	// Each chip can be grabbed, flung, and springs home. Mirrors the TestimonialDeck
-	// pointer pattern (DEC-29). The drag transform lives on its own wrapper, separate
-	// from the chip's float and the pose tilt — three channels, no fight (INS-29).
-	let dragEls: HTMLElement[] = [];
+	// ── Drag-to-place (shared by both variants) ─────────────────────────────────
+	// Each chip can be grabbed and dropped ANYWHERE in the hero — where you let go,
+	// it stays. Svelte owns the drag transform via reactive `poses` bound through a
+	// `style:transform` directive (idiomatic Svelte 5 — no imperative DOM writes racing
+	// the render). The drag transform lives on its own wrapper, separate from the chip's
+	// ambient float and the pose tilt, so the channels never fight (INS-29). The release
+	// "settle" (relaxing the lifted scale/tilt) is a CSS transition toggled by the
+	// `is-settling` class — off while dragging so the chip tracks the pointer 1:1.
+	type Pose = { x: number; y: number; scale: number; rot: number; settling: boolean };
 	let activeIndex = $state(-1);
-	const SNAP: AnimationOptions = { type: 'spring', stiffness: 300, damping: 17 };
-	// Transient drag origins keyed by chip index (plain record — not reactive state).
-	const drag: Record<number, { startX: number; startY: number }> = {};
+	// Each chip's current resting pose, keyed by index. Its presence means the chip has
+	// been placed by the user — used to seed the next grab and (reactively) lift the chip
+	// above the headline/subhead so the drop is always respected.
+	let poses = $state<Record<number, Pose>>({});
+	// In-flight drag: pointer origin + the offset the chip started this grab from.
+	const drag: Record<number, { startX: number; startY: number; baseX: number; baseY: number }> = {};
+
+	function poseStyle(p: Pose | undefined): string | undefined {
+		return p ? `translate(${p.x}px, ${p.y}px) scale(${p.scale}) rotate(${p.rot}deg)` : undefined;
+	}
 
 	function onPointerDown(gi: number, event: PointerEvent) {
 		if (!canAnimate) return;
-		drag[gi] = { startX: event.clientX, startY: event.clientY };
+		const base = poses[gi] ?? { x: 0, y: 0 };
+		drag[gi] = { startX: event.clientX, startY: event.clientY, baseX: base.x, baseY: base.y };
 		activeIndex = gi;
-		(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+		// Lift instantly (no settle transition) so the chip tracks the pointer 1:1.
+		poses[gi] = { x: base.x, y: base.y, scale: 1.08, rot: 0, settling: false };
+		// Pointer capture keeps the drag alive past the chip/section edges. Guarded so
+		// an unusual pointer (or a synthetic one) can never break the interaction.
+		try {
+			(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+		} catch {
+			/* capture is best-effort */
+		}
 	}
 
 	function onPointerMove(gi: number, event: PointerEvent) {
-		const start = drag[gi];
-		if (!start) return;
-		const dx = event.clientX - start.startX;
-		const dy = event.clientY - start.startY;
-		animate(
-			dragEls[gi],
-			{ x: dx, y: dy, scale: 1.08, rotate: Math.max(-12, Math.min(12, dx * 0.05)) },
-			{ duration: 0 }
-		);
+		const s = drag[gi];
+		if (!s) return;
+		const dx = event.clientX - s.startX;
+		const dy = event.clientY - s.startY;
+		poses[gi] = {
+			x: s.baseX + dx,
+			y: s.baseY + dy,
+			scale: 1.08,
+			rot: Math.max(-12, Math.min(12, dx * 0.05)),
+			settling: false
+		};
 	}
 
 	function onPointerUp(gi: number, event: PointerEvent) {
-		if (!(gi in drag)) return;
+		const s = drag[gi];
+		if (!s) return;
+		const x = s.baseX + (event.clientX - s.startX);
+		const y = s.baseY + (event.clientY - s.startY);
 		delete drag[gi];
 		const el = event.currentTarget as HTMLElement;
 		if (el.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
-		animate(
-			dragEls[gi],
-			{ x: 0, y: 0, scale: 1, rotate: 0 },
-			reducedMotion ? { duration: 0 } : SNAP
-		);
+		// Stay where dropped; relax the lift (scale/tilt) with a gentle CSS settle.
+		poses[gi] = { x, y, scale: 1, rot: 0, settling: !reducedMotion };
 		if (activeIndex === gi) activeIndex = -1;
 	}
 
@@ -178,15 +200,16 @@
 			{@const accent = item.you ?? false}
 			<div
 				class="scatter__anchor"
-				style={`left:50%;top:0;z-index:${activeIndex === i ? 40 : s.layer === 'behind' ? 0 : 20};transform:${scatterTransform(i)}`}
+				style={`left:50%;top:0;z-index:${activeIndex === i ? 40 : poses[i] ? 30 : s.layer === 'behind' ? 0 : 20};transform:${scatterTransform(i)}`}
 			>
 				<div bind:this={revealEls[i]} style={`scale:${willAnimate ? 1 : s.depth};opacity:1`}>
-					<!-- Drag wrapper (Motion channel), inside an aria-hidden cluster — no role needed. -->
+					<!-- Drag wrapper (its own transform channel), inside an aria-hidden cluster. -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
-						bind:this={dragEls[i]}
 						class="scatter__drag"
 						class:is-active={activeIndex === i}
+						class:is-settling={poses[i]?.settling}
+						style:transform={poseStyle(poses[i])}
 						onpointerdown={(e) => onPointerDown(i, e)}
 						onpointermove={(e) => onPointerMove(i, e)}
 						onpointerup={(e) => onPointerUp(i, e)}
@@ -218,12 +241,14 @@
 					<div
 						class="cluster__pose"
 						class:is-active={activeIndex === gi}
+						class:is-placed={!!poses[gi]}
 						style={`transform:rotate(${rowRotate(gi, accent)}deg) translateY(${rowLift(gi, accent)}px)`}
 					>
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<div
-							bind:this={dragEls[gi]}
 							class="cluster__drag"
+							class:is-settling={poses[gi]?.settling}
+							style:transform={poseStyle(poses[gi])}
 							onpointerdown={(e) => onPointerDown(gi, e)}
 							onpointermove={(e) => onPointerMove(gi, e)}
 							onpointerup={(e) => onPointerUp(gi, e)}
@@ -279,6 +304,13 @@
 		cursor: grabbing;
 	}
 
+	/* On release we keep the dropped position and let the lift (scale/tilt) ease back
+	   to rest. Absent while dragging so the chip tracks the pointer 1:1. */
+	.scatter__drag.is-settling,
+	.cluster__drag.is-settling {
+		transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
 	/* ── Rows ─────────────────────────────────────────────────────────────────── */
 	.cluster__pose {
 		position: relative;
@@ -289,5 +321,10 @@
 	   anchor's z-index inline; rows toggle it here). */
 	.cluster__pose.is-active {
 		z-index: 40;
+	}
+
+	/* A chip the user has dropped stays above its neighbours so the placement sticks. */
+	.cluster__pose.is-placed {
+		z-index: 30;
 	}
 </style>
