@@ -38,7 +38,7 @@
 	let px = $state(0);
 	let py = $state(0);
 	let frame = 0;
-	const MAX_SHIFT = 16; // px of parallax travel at depth 1
+	const MAX_SHIFT = 24; // px of parallax travel at depth 1
 
 	function onPointerMove(event: PointerEvent) {
 		if (reduced || frame) return;
@@ -49,15 +49,16 @@
 		});
 	}
 
-	// Staggered spring entrance — the cloud assembles itself as the page lands.
-	const ENTER: AnimationOptions = { type: 'spring', stiffness: 120, damping: 18 };
+	// Staggered spring entrance with a little overshoot — the cloud pops into place,
+	// chip by chip, as the page lands rather than simply fading in.
+	const ENTER: AnimationOptions = { type: 'spring', stiffness: 150, damping: 12 };
 
 	onMount(() => {
 		if (!willAnimate) return;
 		revealEls.forEach((el, i) => {
 			if (!el) return;
-			animate(el, { opacity: 0, scale: 0.7 }, { duration: 0 });
-			animate(el, { opacity: 1, scale: spot(i).depth }, { ...ENTER, delay: 0.15 + i * 0.07 });
+			animate(el, { opacity: 0, scale: 0.5 }, { duration: 0 });
+			animate(el, { opacity: 1, scale: spot(i).depth }, { ...ENTER, delay: 0.2 + i * 0.09 });
 		});
 		window.addEventListener('pointermove', onPointerMove);
 		return () => {

@@ -31,7 +31,7 @@
 
 	// Desynced, perpetual drift: each chip floats on its own clock so the row reads
 	// like a small crowd milling about, not a marching band. Tuned per-index.
-	const driftDuration = $derived(6.5 + (index % 4) * 0.8);
+	const driftDuration = $derived(5 + (index % 4) * 0.7);
 	const driftDelay = $derived(index * -1.3);
 	const driftReversed = $derived(index % 2 === 1);
 
@@ -45,20 +45,21 @@
 	// Magnetic lift: the chip leans toward the cursor and rises, on Motion springs
 	// (DEC-29). Transform is Motion's channel; the CSS drift uses `translate:`, so the
 	// two compose instead of fighting. Decorative only — gated on input + preference.
-	const LEAN: AnimationOptions = { type: 'spring', stiffness: 220, damping: 16 };
-	const REST: AnimationOptions = { type: 'spring', stiffness: 160, damping: 18 };
+	const LEAN: AnimationOptions = { type: 'spring', stiffness: 280, damping: 13 };
+	const REST: AnimationOptions = { type: 'spring', stiffness: 180, damping: 15 };
 
 	function magnetize(event: PointerEvent) {
 		if (reducedMotion || !canAnimate || event.pointerType === 'touch') return;
 		const r = el.getBoundingClientRect();
 		const dx = event.clientX - (r.left + r.width / 2);
 		const dy = event.clientY - (r.top + r.height / 2);
-		animate(el, { x: dx * 0.2, y: dy * 0.2, scale: 1.06 }, LEAN);
+		// Lean + lift + a touch of tilt toward the cursor, with a springy pop.
+		animate(el, { x: dx * 0.26, y: dy * 0.22, scale: 1.1, rotate: dx * 0.025 }, LEAN);
 	}
 
 	function release() {
 		if (!canAnimate) return;
-		animate(el, { x: 0, y: 0, scale: 1 }, REST);
+		animate(el, { x: 0, y: 0, scale: 1, rotate: 0 }, REST);
 	}
 </script>
 
@@ -73,19 +74,20 @@
 	{...rest}
 >
 	<span
-		class="text-lg leading-none transition-transform duration-300 group-hover:scale-125 motion-reduce:transition-none"
+		class="text-lg leading-none transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-150 motion-reduce:transition-none"
 		aria-hidden="true">{emoji}</span
 	>
 	{@render children()}
 </span>
 
 <style>
-	/* Ambient drift on the `translate:` longhand — a separate channel from `transform`,
-	   so Motion's magnetic lift and this perpetual float layer cleanly (INS-28). The
-	   elliptical path makes chips appear to circle one another like a team. */
+	/* Ambient float on the `translate:` + `rotate:` longhands — separate channels from
+	   `transform`, so Motion's magnetic lift and this perpetual float layer cleanly
+	   (INS-29). Bob, sway and a gentle tilt make each chip read like a person buoyed in
+	   place rather than a static pill. */
 	.audience-chip {
-		animation: audience-drift var(--drift-dur, 7s) ease-in-out var(--drift-delay, 0s) infinite;
-		will-change: transform, translate;
+		animation: audience-drift var(--drift-dur, 6s) ease-in-out var(--drift-delay, 0s) infinite;
+		will-change: transform, translate, rotate;
 	}
 
 	.audience-chip--reverse {
@@ -100,18 +102,23 @@
 	@keyframes audience-drift {
 		0% {
 			translate: 0 0;
+			rotate: 0deg;
 		}
-		25% {
-			translate: 5px -4px;
+		20% {
+			translate: 8px -7px;
+			rotate: 1.6deg;
 		}
 		50% {
-			translate: 0 -8px;
+			translate: 2px -14px;
+			rotate: -0.6deg;
 		}
-		75% {
-			translate: -5px -4px;
+		80% {
+			translate: -8px -7px;
+			rotate: -1.6deg;
 		}
 		100% {
 			translate: 0 0;
+			rotate: 0deg;
 		}
 	}
 

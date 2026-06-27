@@ -219,7 +219,9 @@
 			<AudienceCloud items={audience} class="hidden lg:block" />
 
 			<div class="relative z-10 mx-auto max-w-4xl px-6 pt-16 pb-20 text-center sm:pt-24">
-				<Badge variant="neutral" dot>A free community for builders</Badge>
+				<Badge variant="solid" size="lg" dot pulse class="shadow-card">
+					A free community for builders
+				</Badge>
 
 				<h1 class="mt-8 text-5xl font-black tracking-tight text-balance sm:text-7xl">
 					Everyone can create.
