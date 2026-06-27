@@ -2,7 +2,8 @@
 	import { onMount } from 'svelte';
 	import { animate, type AnimationOptions } from 'motion';
 	import { prefersReducedMotion } from 'svelte/motion';
-	import AudienceChip from './AudienceChip.svelte';
+	import { canUseWebAnimations } from '$lib/motion/capabilities';
+	import ClusterChipDrag from './ClusterChipDrag.svelte';
 
 	type Item = { emoji: string; label: string; you?: boolean };
 	type Variant = 'rows' | 'scatter';
@@ -37,8 +38,7 @@
 
 	const reducedMotion = $derived(prefersReducedMotion.current);
 	// jsdom/SSR have no Web Animations API — feature-detect so tests/SSR stay static (INS-28).
-	const canAnimate =
-		typeof Element !== 'undefined' && typeof Element.prototype.animate === 'function';
+	const canAnimate = canUseWebAnimations();
 	const willAnimate = $derived(canAnimate && !reducedMotion);
 
 	// Playfulness fans out into the concrete dials the layers consume.
@@ -62,6 +62,8 @@
 	let poses = $state<Record<number, Pose>>({});
 	// In-flight drag: pointer origin + the offset the chip started this grab from.
 	const drag: Record<number, { startX: number; startY: number; baseX: number; baseY: number }> = {};
+	const DRAG_CLICK_THRESHOLD = 6;
+	let dragMoved = $state<Record<number, boolean>>({});
 
 	function poseStyle(p: Pose | undefined): string | undefined {
 		return p ? `translate(${p.x}px, ${p.y}px) scale(${p.scale}) rotate(${p.rot}deg)` : undefined;
@@ -71,6 +73,7 @@
 		if (!canAnimate) return;
 		const base = poses[gi] ?? { x: 0, y: 0 };
 		drag[gi] = { startX: event.clientX, startY: event.clientY, baseX: base.x, baseY: base.y };
+		dragMoved[gi] = false;
 		activeIndex = gi;
 		// Lift instantly (no settle transition) so the chip tracks the pointer 1:1.
 		poses[gi] = { x: base.x, y: base.y, scale: 1.08, rot: 0, settling: false };
@@ -88,6 +91,7 @@
 		if (!s) return;
 		const dx = event.clientX - s.startX;
 		const dy = event.clientY - s.startY;
+		if (Math.hypot(dx, dy) > DRAG_CLICK_THRESHOLD) dragMoved[gi] = true;
 		poses[gi] = {
 			x: s.baseX + dx,
 			y: s.baseY + dy,
@@ -206,44 +210,25 @@
 				style={`left:50%;top:0;z-index:${activeIndex === i ? 40 : poses[i] ? 30 : s.layer === 'behind' ? 0 : 20};transform:${scatterTransform(i)}`}
 			>
 				<div bind:this={revealEls[i]} style={`scale:${willAnimate ? 1 : s.depth};opacity:1`}>
-					<!-- Drag wrapper (its own transform channel), inside an aria-hidden cluster. -->
-					{#if accent}
-						<div class="scatter__drag">
-							<AudienceChip
-								emoji={item.emoji}
-								index={i}
-								variant="accent"
-								amplitude={chipAmplitude * s.depth}
-								{paused}
-								cta
-								{onJoin}
-							>
-								{item.label}
-							</AudienceChip>
-						</div>
-					{:else}
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<div
-							class="scatter__drag"
-							class:is-active={activeIndex === i}
-							class:is-settling={poses[i]?.settling}
-							style:transform={poseStyle(poses[i])}
-							onpointerdown={(e) => onPointerDown(i, e)}
-							onpointermove={(e) => onPointerMove(i, e)}
-							onpointerup={(e) => onPointerUp(i, e)}
-							onpointercancel={(e) => onPointerUp(i, e)}
-						>
-							<AudienceChip
-								emoji={item.emoji}
-								index={i}
-								variant="neutral"
-								amplitude={chipAmplitude * s.depth}
-								{paused}
-							>
-								{item.label}
-							</AudienceChip>
-						</div>
-					{/if}
+					<ClusterChipDrag
+						chipIndex={i}
+						emoji={item.emoji}
+						label={item.label}
+						variant={accent ? 'accent' : 'neutral'}
+						amplitude={chipAmplitude * s.depth}
+						{paused}
+						cta={accent}
+						{onJoin}
+						dragging={activeIndex === i}
+						suppressClick={!!dragMoved[i]}
+						poseTransform={poseStyle(poses[i])}
+						settling={poses[i]?.settling}
+						isActive={activeIndex === i}
+						surfaceClass="scatter__drag"
+						{onPointerDown}
+						{onPointerMove}
+						{onPointerUp}
+					/>
 				</div>
 			</div>
 		{/each}
@@ -263,40 +248,24 @@
 						class:is-placed={!!poses[gi]}
 						style={`transform:rotate(${rowRotate(gi, accent)}deg) translateY(${rowLift(gi, accent)}px)`}
 					>
-						{#if accent}
-							<AudienceChip
-								emoji={it.emoji}
-								index={gi}
-								variant="accent"
-								amplitude={chipAmplitude}
-								{paused}
-								cta
-								{onJoin}
-							>
-								{it.label}
-							</AudienceChip>
-						{:else}
-							<!-- svelte-ignore a11y_no_static_element_interactions -->
-							<div
-								class="cluster__drag"
-								class:is-settling={poses[gi]?.settling}
-								style:transform={poseStyle(poses[gi])}
-								onpointerdown={(e) => onPointerDown(gi, e)}
-								onpointermove={(e) => onPointerMove(gi, e)}
-								onpointerup={(e) => onPointerUp(gi, e)}
-								onpointercancel={(e) => onPointerUp(gi, e)}
-							>
-								<AudienceChip
-									emoji={it.emoji}
-									index={gi}
-									variant="neutral"
-									amplitude={chipAmplitude}
-									{paused}
-								>
-									{it.label}
-								</AudienceChip>
-							</div>
-						{/if}
+						<ClusterChipDrag
+							chipIndex={gi}
+							emoji={it.emoji}
+							label={it.label}
+							variant={accent ? 'accent' : 'neutral'}
+							amplitude={chipAmplitude}
+							{paused}
+							cta={accent}
+							{onJoin}
+							dragging={activeIndex === gi}
+							suppressClick={!!dragMoved[gi]}
+							poseTransform={poseStyle(poses[gi])}
+							settling={poses[gi]?.settling}
+							surfaceClass="cluster__drag"
+							{onPointerDown}
+							{onPointerMove}
+							{onPointerUp}
+						/>
 					</div>
 				{/each}
 			</div>
