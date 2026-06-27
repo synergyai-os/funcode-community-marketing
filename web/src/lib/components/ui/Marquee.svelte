@@ -5,21 +5,34 @@
 	import IconPause from '~icons/lucide/pause';
 	import IconPlay from '~icons/lucide/play';
 
+	export type MarqueeSpeed = 'default' | 'relaxed';
+
 	type Props = HTMLAttributes<HTMLDivElement> & {
 		children: Snippet;
-		/** Seconds for one full loop. */
+		/** Seconds for one full loop — overrides `speed` when set. */
 		duration?: number;
+		/** Token-backed preset from layout.css @theme (`--marquee-duration-*`). */
+		speed?: MarqueeSpeed;
 	};
 
 	let {
 		children,
-		duration = 40,
+		duration,
+		speed = 'default',
 		class: className = '',
 		'aria-label': ariaLabel = 'Scrolling content',
 		...rest
 	}: Props = $props();
 
 	let paused = $state(false);
+
+	const durationCss = $derived(
+		duration !== undefined
+			? `${duration}s`
+			: speed === 'relaxed'
+				? 'var(--marquee-duration-relaxed)'
+				: 'var(--marquee-duration-default)'
+	);
 </script>
 
 <!--
@@ -45,7 +58,7 @@
 	<div
 		class="marquee__viewport"
 		class:is-paused={paused}
-		style={`--marquee-duration:${duration}s`}
+		style={`--marquee-duration:${durationCss}`}
 		tabindex="0"
 		role="group"
 		aria-label={ariaLabel}

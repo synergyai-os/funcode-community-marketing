@@ -7,8 +7,11 @@
 		Badge,
 		Button,
 		Card,
+		JoinClubModal,
 		TestimonialDeck
 	} from '$lib/components/ui';
+	import VoicesSection from '$lib/components/landing/VoicesSection.svelte';
+	import { heroAudienceChips } from '$lib/data/personas';
 	import { testimonials, published } from '$lib/data/testimonials';
 	import IconArrowRight from '~icons/lucide/arrow-right';
 	import IconPause from '~icons/lucide/pause';
@@ -108,22 +111,17 @@
 		{ label: 'Build with our tools', icon: IconWrench }
 	];
 
-	// AUD-1 — mirror the audience so people self-identify. Each gets a face (emoji);
-	// the final "…and you" is the accent invitation, not just another label.
-	type Audience = { emoji: string; label: string; you?: boolean };
-	const audience: Audience[] = [
-		{ emoji: '🧭', label: 'Product managers' },
-		{ emoji: '🎨', label: 'Designers who build now' },
-		{ emoji: '🚀', label: 'Founders' },
-		{ emoji: '🛠️', label: 'Indie makers' },
-		{ emoji: '🤖', label: 'Agent-curious engineers' },
-		{ emoji: '⚡', label: 'Teams going faster' },
-		{ emoji: '👋', label: '…and you', you: true }
-	];
+	// AUD-1 — shared persona registry (hero, voices, /for/* pages).
+	const audience = heroAudienceChips();
 
 	// The hero audience cluster floats on its own; this toggle gives people a way to
 	// freeze that motion (WCAG 2.2.2). Lives lower in the hero, near the CTAs.
 	let audiencePaused = $state(false);
+	let joinModalOpen = $state(false);
+
+	function openJoinModal() {
+		joinModalOpen = true;
+	}
 
 	// STR-7 / STR-8 / STR-9 — free is the heart; everything else is optional.
 	type Way = {
@@ -242,6 +240,7 @@
 						items={audience}
 						bind:paused={audiencePaused}
 						playfulness={0.7}
+						onJoin={openJoinModal}
 						class="hidden xl:block"
 					/>
 				</div>
@@ -253,6 +252,7 @@
 					variant="rows"
 					items={audience}
 					bind:paused={audiencePaused}
+					onJoin={openJoinModal}
 					class="mt-10 xl:hidden"
 				/>
 
@@ -433,13 +433,32 @@
 
 				<div class="mt-10 flex flex-wrap items-center justify-center gap-4">
 					{#each audience as who, i (who.label)}
-						<AudienceChip emoji={who.emoji} index={i} variant={who.you ? 'accent' : 'neutral'}>
-							{who.label}
-						</AudienceChip>
+						{#if who.you}
+							<AudienceChip
+								emoji={who.emoji}
+								index={i}
+								variant="accent"
+								cta={true}
+								onJoin={openJoinModal}
+							>
+								{who.label}
+							</AudienceChip>
+						{:else if who.personaId}
+							<a
+								href="/for/{who.personaId}"
+								class="inline-flex rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+							>
+								<AudienceChip emoji={who.emoji} index={i} variant="neutral">
+									{who.label}
+								</AudienceChip>
+							</a>
+						{/if}
 					{/each}
 				</div>
 			</div>
 		</section>
+
+		<VoicesSection />
 
 		<!--
 			Play Room stories. The swipeable deck (DEC-22) renders only consented quotes
@@ -579,3 +598,5 @@
 		</div>
 	</footer>
 </div>
+
+<JoinClubModal bind:open={joinModalOpen} joinUrl={JOIN_URL} />

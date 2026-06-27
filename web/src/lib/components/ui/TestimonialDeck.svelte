@@ -16,7 +16,12 @@
 	import IconChevronLeft from '~icons/lucide/chevron-left';
 	import IconChevronRight from '~icons/lucide/chevron-right';
 
-	let { items, class: className = '' }: { items: DeckItem[]; class?: string } = $props();
+	let { items, class: className = '', ariaLabel = 'Testimonials' }: {
+		items: DeckItem[];
+		class?: string;
+		/** Accessible name for the carousel (e.g. member vs thought-leader decks). */
+		ariaLabel?: string;
+	} = $props();
 
 	const count = $derived(items.length);
 	const dots = $derived(items.map((_, i) => i));
@@ -333,7 +338,7 @@
 	<div
 		role="group"
 		aria-roledescription="carousel"
-		aria-label="Builder testimonials"
+		aria-label={ariaLabel}
 		tabindex="0"
 		class={`flex w-full flex-col items-center gap-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-offset-2 ${className}`}
 		onkeydown={onKeydown}
@@ -375,7 +380,14 @@
 							onpointercancel={slot === 0 ? onPointerUp : undefined}
 						>
 							<div bind:this={shadowEls[i]} class="deck-card__shadow" aria-hidden="true"></div>
-							<Testimonial quote={item.quote} name={item.name} role={item.role} />
+							<Testimonial
+								quote={item.quote}
+								name={item.name}
+								role={item.role}
+								sourceHref={item.sourceHref}
+								sourceLabel={item.sourceLabel}
+								variant={item.variant ?? 'member'}
+							/>
 						</div>
 					{/each}
 				</div>

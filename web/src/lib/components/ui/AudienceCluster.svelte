@@ -21,6 +21,8 @@
 		playfulness?: number;
 		/** Freeze the ambient float. Bindable so an external control can toggle it. */
 		paused?: boolean;
+		/** Opens the join flow when the "…and you" CTA chip is activated. */
+		onJoin?: () => void;
 		class?: string;
 	};
 
@@ -29,6 +31,7 @@
 		variant = 'rows',
 		playfulness = 0.7,
 		paused = $bindable(false),
+		onJoin,
 		class: className = ''
 	}: Props = $props();
 
@@ -204,27 +207,43 @@
 			>
 				<div bind:this={revealEls[i]} style={`scale:${willAnimate ? 1 : s.depth};opacity:1`}>
 					<!-- Drag wrapper (its own transform channel), inside an aria-hidden cluster. -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<div
-						class="scatter__drag"
-						class:is-active={activeIndex === i}
-						class:is-settling={poses[i]?.settling}
-						style:transform={poseStyle(poses[i])}
-						onpointerdown={(e) => onPointerDown(i, e)}
-						onpointermove={(e) => onPointerMove(i, e)}
-						onpointerup={(e) => onPointerUp(i, e)}
-						onpointercancel={(e) => onPointerUp(i, e)}
-					>
-						<AudienceChip
-							emoji={item.emoji}
-							index={i}
-							variant={accent ? 'accent' : 'neutral'}
-							amplitude={chipAmplitude * s.depth}
-							{paused}
+					{#if accent}
+						<div class="scatter__drag">
+							<AudienceChip
+								emoji={item.emoji}
+								index={i}
+								variant="accent"
+								amplitude={chipAmplitude * s.depth}
+								{paused}
+								cta
+								{onJoin}
+							>
+								{item.label}
+							</AudienceChip>
+						</div>
+					{:else}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<div
+							class="scatter__drag"
+							class:is-active={activeIndex === i}
+							class:is-settling={poses[i]?.settling}
+							style:transform={poseStyle(poses[i])}
+							onpointerdown={(e) => onPointerDown(i, e)}
+							onpointermove={(e) => onPointerMove(i, e)}
+							onpointerup={(e) => onPointerUp(i, e)}
+							onpointercancel={(e) => onPointerUp(i, e)}
 						>
-							{item.label}
-						</AudienceChip>
-					</div>
+							<AudienceChip
+								emoji={item.emoji}
+								index={i}
+								variant="neutral"
+								amplitude={chipAmplitude * s.depth}
+								{paused}
+							>
+								{item.label}
+							</AudienceChip>
+						</div>
+					{/if}
 				</div>
 			</div>
 		{/each}
@@ -244,26 +263,40 @@
 						class:is-placed={!!poses[gi]}
 						style={`transform:rotate(${rowRotate(gi, accent)}deg) translateY(${rowLift(gi, accent)}px)`}
 					>
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<div
-							class="cluster__drag"
-							class:is-settling={poses[gi]?.settling}
-							style:transform={poseStyle(poses[gi])}
-							onpointerdown={(e) => onPointerDown(gi, e)}
-							onpointermove={(e) => onPointerMove(gi, e)}
-							onpointerup={(e) => onPointerUp(gi, e)}
-							onpointercancel={(e) => onPointerUp(gi, e)}
-						>
+						{#if accent}
 							<AudienceChip
 								emoji={it.emoji}
 								index={gi}
-								variant={accent ? 'accent' : 'neutral'}
+								variant="accent"
 								amplitude={chipAmplitude}
 								{paused}
+								cta
+								{onJoin}
 							>
 								{it.label}
 							</AudienceChip>
-						</div>
+						{:else}
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div
+								class="cluster__drag"
+								class:is-settling={poses[gi]?.settling}
+								style:transform={poseStyle(poses[gi])}
+								onpointerdown={(e) => onPointerDown(gi, e)}
+								onpointermove={(e) => onPointerMove(gi, e)}
+								onpointerup={(e) => onPointerUp(gi, e)}
+								onpointercancel={(e) => onPointerUp(gi, e)}
+							>
+								<AudienceChip
+									emoji={it.emoji}
+									index={gi}
+									variant="neutral"
+									amplitude={chipAmplitude}
+									{paused}
+								>
+									{it.label}
+								</AudienceChip>
+							</div>
+						{/if}
 					</div>
 				{/each}
 			</div>

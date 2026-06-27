@@ -20,6 +20,13 @@
 	   shadow deepened and spread, grounded by a soft neutral ambient layer. */
 	--shadow-card-lifted:
 		0 30px 60px -18px rgb(255 87 34 / 0.4), 0 12px 24px -12px rgb(11 11 15 / 0.22);
+
+	/* ── Motion & filter UX (tweak here — STD-1) ───────────────────────────── */
+	--ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+	--marquee-duration-default: 40s;
+	--marquee-duration-relaxed: 96s;
+	--width-voice-card: 20rem;
+	--width-voice-card-lg: 24rem;
 }
 
 @media (prefers-reduced-motion: no-preference) {

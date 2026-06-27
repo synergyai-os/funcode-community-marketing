@@ -2,6 +2,8 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { ChainCaptureManifest } from './chain-capture.types.js';
 import { runEpisodeBrief, writeChainCaptureManifest } from './episode-brief.js';
+import { printVoiceSyncHint, writeVoiceCandidates } from './voices-sync.js';
+import { repoRoot } from './paths.js';
 import { printVerifyReport, runChainVerify } from './chain-verify.js';
 import { execPb } from './pb-exec.js';
 import {
@@ -299,6 +301,9 @@ export function runChainCommit(jobPath: string, options: CommitOptions): void {
 
 	const capturePath = writeChainCaptureManifest(jobPath, manifest);
 	console.log(`Wrote ${capturePath}`);
+
+	writeVoiceCandidates(repoRoot, jobPath, manifest, draft);
+	printVoiceSyncHint(repoRoot);
 
 	const reviewManifest = buildGlossaryReviewManifest(videoId, draft, {
 		sourceUrl,

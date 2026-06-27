@@ -6,7 +6,18 @@
  */
 
 /** A single testimonial rendered by the deck. */
-export type DeckItem = { quote: string; name: string; role: string };
+export type DeckItem = {
+	quote: string;
+	name: string;
+	/** Authority line under the name — title, company, segment (STD-6). */
+	role: string;
+	/** Traceable source URL (voice cards: episode link). */
+	sourceHref?: string;
+	/** Humble source label, e.g. "On Lenny's Podcast" (STD-6). */
+	sourceLabel?: string;
+	/** Voice cards show source attribution; member cards do not. */
+	variant?: 'member' | 'voice';
+};
 
 /** Constrain an index to the deck's bounds; an empty deck resolves to 0. */
 export function clampIndex(count: number, index: number): number {

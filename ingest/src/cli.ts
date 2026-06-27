@@ -3,7 +3,8 @@ import { parseCommitArgs, runChainCommit } from './chain-commit.js';
 import { parseVerifyArgs, printVerifyReport, runChainVerify } from './chain-verify.js';
 import { runEpisodeBrief } from './episode-brief.js';
 import { runGlossaryReview, runIngest } from './pipeline.js';
-import { jobDir } from './paths.js';
+import { jobDir, repoRoot } from './paths.js';
+import { runSyncVoicesReport } from './voices-sync.js';
 
 const [command, ...rest] = process.argv.slice(2);
 
@@ -22,6 +23,10 @@ function dispatch(): Promise<void> {
 		const report = runChainVerify(jobDir(job));
 		printVerifyReport(report);
 		if (!report.passed) process.exit(1);
+		return Promise.resolve();
+	}
+	if (command === 'sync-voices') {
+		runSyncVoicesReport(repoRoot);
 		return Promise.resolve();
 	}
 	if (command === 'brief') {

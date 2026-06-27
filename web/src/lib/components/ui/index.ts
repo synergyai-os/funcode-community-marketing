@@ -9,4 +9,6 @@ export { default as Accordion } from './Accordion.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Testimonial } from './Testimonial.svelte';
 export { default as TestimonialDeck } from './TestimonialDeck.svelte';
+export { default as JoinClubModal } from './JoinClubModal.svelte';
 export { default as Marquee } from './Marquee.svelte';
+export type { MarqueeSpeed } from './Marquee.svelte';
