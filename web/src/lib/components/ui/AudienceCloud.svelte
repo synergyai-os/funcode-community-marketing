@@ -7,20 +7,26 @@
 	type Item = { emoji: string; label: string; you?: boolean };
 	let { items, class: className = '' }: { items: Item[]; class?: string } = $props();
 
-	// Curated scatter for a hero band: chips live in the left/right gutters and
-	// corners so the centre column (headline + CTAs) stays clear. `depth` drives
-	// size and parallax strength — chips further back read smaller and drift less,
-	// giving a real sense of layers. Index maps 1:1 to items; extra items wrap.
-	// Positions are tuned to label length: long labels sit inset (room to breathe),
-	// short labels can hug the edges. Centre column (~18–82% on lg) stays clear.
-	const SPOTS = [
-		{ x: 9, y: 27, depth: 0.9 }, // Product managers
-		{ x: 80, y: 16, depth: 1.04 }, // Designers who build now (longest → inset)
-		{ x: 12, y: 62, depth: 1.0 }, // Founders (short)
-		{ x: 91, y: 50, depth: 0.86 }, // Indie makers (short → far right)
-		{ x: 16, y: 88, depth: 0.82 }, // Agent-curious engineers
-		{ x: 82, y: 84, depth: 0.96 }, // Teams going faster
-		{ x: 66, y: 93, depth: 1.1 } // …and you (accent)
+	// Edge-anchored scatter for the hero's outer gutters. Two ideas keep it
+	// collision-free at any width (this layer is 2xl-only — below that the gutters
+	// can't hold six big chips, so the marquee carries the audience instead):
+	//   1. Chips anchor to the viewport EDGE (left: / right:), so they hug the
+	//      gutter and never drift inward as the window widens.
+	//   2. Placement is LENGTH-AWARE by band. The centred column is tall and wide at
+	//      the headline (y24–54, ~320px gutter at 2xl) but narrow at the paragraph
+	//      (y58–70, ~432px gutter): long labels live beside the paragraph, short
+	//      ones flank the headline, medium ones sit by the CTAs — measured, not guessed.
+	// `depth` drives size + parallax strength for a real sense of layers.
+	type Side = 'left' | 'right' | 'center';
+	type Spot = { side: Side; x: number; y: number; depth: number };
+	const SPOTS: Spot[] = [
+		{ side: 'left', x: 3, y: 80, depth: 0.95 }, // 0 Product managers (med) — by CTAs
+		{ side: 'right', x: 3, y: 64, depth: 1.0 }, // 1 Designers who build now (long) — by paragraph
+		{ side: 'left', x: 4, y: 33, depth: 0.9 }, // 2 Founders (short) — flanks headline
+		{ side: 'right', x: 4, y: 30, depth: 0.86 }, // 3 Indie makers (short) — flanks headline
+		{ side: 'left', x: 3, y: 66, depth: 1.0 }, // 4 Agent-curious engineers (long) — by paragraph
+		{ side: 'right', x: 3, y: 80, depth: 0.97 }, // 5 Teams going faster (med) — by CTAs
+		{ side: 'center', x: 50, y: 94, depth: 1.12 } // 6 …and you (accent) — bottom centre
 	];
 	const spot = (i: number) => SPOTS[i % SPOTS.length];
 
@@ -49,6 +55,15 @@
 		});
 	}
 
+	// Outer-wrapper transform: edge offset + parallax. `center` chips also recentre
+	// horizontally (-50%); edge chips anchor flush to their gutter.
+	function transform(s: Spot): string {
+		const sx = px * MAX_SHIFT * s.depth;
+		const sy = py * MAX_SHIFT * s.depth;
+		const x = s.side === 'center' ? `calc(-50% + ${sx}px)` : `${sx}px`;
+		return `translate3d(${x}, calc(-50% + ${sy}px), 0)`;
+	}
+
 	// Staggered spring entrance with a little overshoot — the cloud pops into place,
 	// chip by chip, as the page lands rather than simply fading in.
 	const ENTER: AnimationOptions = { type: 'spring', stiffness: 150, damping: 12 };
@@ -75,7 +90,7 @@
 		{@const s = spot(i)}
 		<div
 			class="absolute w-max"
-			style={`left:${s.x}%;top:${s.y}%;transform:translate3d(calc(-50% + ${px * MAX_SHIFT * s.depth}px), calc(-50% + ${py * MAX_SHIFT * s.depth}px), 0)`}
+			style={`${s.side === 'right' ? 'right' : 'left'}:${s.x}%;top:${s.y}%;transform:${transform(s)}`}
 		>
 			<div bind:this={revealEls[i]} style={`scale:${willAnimate ? 1 : s.depth}`}>
 				<AudienceChip

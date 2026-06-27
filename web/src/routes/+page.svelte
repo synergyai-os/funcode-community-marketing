@@ -7,6 +7,7 @@
 		Badge,
 		Button,
 		Card,
+		Marquee,
 		TestimonialDeck
 	} from '$lib/components/ui';
 	import { testimonials, published } from '$lib/data/testimonials';
@@ -212,11 +213,13 @@
 				class="pointer-events-none absolute -top-40 left-1/2 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-accent-soft blur-3xl"
 			></div>
 
-			<!-- The audience, alive: floating chips frame the headline so visitors see
-			     themselves on arrival (AUD-1). lg+ only — the gutters that hold the
-			     scatter don't exist on smaller screens, where the "Who it's for"
-			     section carries the same roll-call. -->
-			<AudienceCloud items={audience} class="hidden lg:block" />
+			<!-- The audience, alive (AUD-1). Two responsive surfaces, same chips:
+			     • 2xl+ — a floating scatter frames the headline (only here are the
+			       gutters wide enough for six big chips; placement is length-aware so
+			       nothing collides).
+			     • below 2xl — a full-bleed marquee ribbon (further down) streams the
+			       same people past, so every device meets the audience on arrival. -->
+			<AudienceCloud items={audience} class="hidden 2xl:block" />
 
 			<div class="relative z-10 mx-auto max-w-4xl px-6 pt-16 pb-20 text-center sm:pt-24">
 				<Badge variant="solid" size="lg" dot pulse class="shadow-card">
@@ -248,6 +251,19 @@
 				<p class="mt-5 text-sm text-neutral-500">
 					Free forever. No paywall to belong, learn, or build.
 				</p>
+			</div>
+
+			<!-- Sub-2xl audience surface: the same chips stream past as a ribbon, so
+			     phones, tablets and laptops meet the community too (the scatter above
+			     needs gutters they don't have). Reuses the Marquee atom. -->
+			<div class="relative z-10 -mt-4 pb-16 2xl:hidden">
+				<Marquee duration={36} aria-label="People building with FunCode">
+					{#each audience as who, i (who.label)}
+						<AudienceChip emoji={who.emoji} index={i} variant={who.you ? 'accent' : 'neutral'}>
+							{who.label}
+						</AudienceChip>
+					{/each}
+				</Marquee>
 			</div>
 		</section>
 
