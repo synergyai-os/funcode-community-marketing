@@ -3,15 +3,16 @@
 	import {
 		Accordion,
 		AudienceChip,
-		AudienceCloud,
+		AudienceCluster,
 		Badge,
 		Button,
 		Card,
-		Marquee,
 		TestimonialDeck
 	} from '$lib/components/ui';
 	import { testimonials, published } from '$lib/data/testimonials';
 	import IconArrowRight from '~icons/lucide/arrow-right';
+	import IconPause from '~icons/lucide/pause';
+	import IconPlay from '~icons/lucide/play';
 	import IconSparkles from '~icons/lucide/sparkles';
 	import IconLayoutGrid from '~icons/lucide/layout-grid';
 	import IconGift from '~icons/lucide/gift';
@@ -120,6 +121,10 @@
 		{ emoji: '👋', label: '…and you', you: true }
 	];
 
+	// The hero audience cluster floats on its own; this toggle gives people a way to
+	// freeze that motion (WCAG 2.2.2). Lives lower in the hero, near the CTAs.
+	let audiencePaused = $state(false);
+
 	// STR-7 / STR-8 / STR-9 — free is the heart; everything else is optional.
 	type Way = {
 		eyebrow: string;
@@ -213,25 +218,45 @@
 				class="pointer-events-none absolute -top-40 left-1/2 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-accent-soft blur-3xl"
 			></div>
 
-			<!-- The audience, alive (AUD-1). Two responsive surfaces, same chips:
-			     • 2xl+ — a floating scatter frames the headline (only here are the
-			       gutters wide enough for six big chips; placement is length-aware so
-			       nothing collides).
-			     • below 2xl — a full-bleed marquee ribbon (further down) streams the
-			       same people past, so every device meets the audience on arrival. -->
-			<AudienceCloud items={audience} class="hidden 2xl:block" />
-
 			<div class="relative z-10 mx-auto max-w-4xl px-6 pt-16 pb-20 text-center sm:pt-24">
 				<Badge variant="solid" size="lg" dot pulse class="shadow-card">
 					A free community for builders
 				</Badge>
 
-				<h1 class="mt-8 text-5xl font-black tracking-tight text-balance sm:text-7xl">
-					Everyone can create.
-					<span class="block text-accent">Learn how to build with AI.</span>
-				</h1>
+				<!-- Headline stage (AUD-1): on wide screens (xl+, the width the scatter is
+				     art-directed for) the audience weaves THROUGH the headline — some chips
+				     in front of the text, some tucked behind it (the H1 is pointer-events-none
+				     so behind chips stay grabbable). The H1 sits at z-10; the scatter layers
+				     around it (front 20 / behind 0). Below xl the scatter would crowd the
+				     headline against the viewport edges, so we fall back to rows there. -->
+				<div class="relative mt-8">
+					<h1
+						class="pointer-events-none relative z-10 text-5xl font-black tracking-tight text-balance sm:text-7xl"
+					>
+						Everyone can create.
+						<span class="block text-accent">Learn how to build with AI.</span>
+					</h1>
 
-				<p class="mx-auto mt-6 max-w-2xl text-lg text-pretty text-ink-soft sm:text-xl">
+					<AudienceCluster
+						variant="scatter"
+						items={audience}
+						bind:paused={audiencePaused}
+						playfulness={0.7}
+						class="hidden xl:block"
+					/>
+				</div>
+
+				<!-- Phones, tablets & narrow laptops meet the same crowd as a tidy, draggable
+				     two-row cluster (overlapping the big headline there would hurt legibility
+				     and the scatter needs xl room to breathe). -->
+				<AudienceCluster
+					variant="rows"
+					items={audience}
+					bind:paused={audiencePaused}
+					class="mt-10 xl:hidden"
+				/>
+
+				<p class="mx-auto mt-10 max-w-2xl text-lg text-pretty text-ink-soft sm:text-xl">
 					Join product people who'd rather ship a prototype than write another PRD — building in
 					Play Rooms, not permission gates. AI does the heavy lifting; you steer.
 				</p>
@@ -253,17 +278,25 @@
 				</p>
 			</div>
 
-			<!-- Sub-2xl audience surface: the same chips stream past as a ribbon, so
-			     phones, tablets and laptops meet the community too (the scatter above
-			     needs gutters they don't have). Reuses the Marquee atom. -->
-			<div class="relative z-10 -mt-4 pb-16 2xl:hidden">
-				<Marquee duration={36} aria-label="People building with FunCode">
-					{#each audience as who, i (who.label)}
-						<AudienceChip emoji={who.emoji} index={i} variant={who.you ? 'accent' : 'neutral'}>
-							{who.label}
-						</AudienceChip>
-					{/each}
-				</Marquee>
+			<!-- Pause/resume for the cluster's ambient float (WCAG 2.2.2). Kept here, low
+			     in the hero, so the chips between the headline and pitch stay uncluttered.
+			     Hidden when the user already prefers reduced motion (nothing to pause). -->
+			<div class="relative z-10 -mt-8 flex justify-center pb-16 motion-reduce:hidden">
+				<Button
+					variant="secondary"
+					size="sm"
+					aria-pressed={audiencePaused}
+					onclick={() => (audiencePaused = !audiencePaused)}
+				>
+					{#snippet leading()}
+						{#if audiencePaused}
+							<IconPlay class="size-4" aria-hidden="true" />
+						{:else}
+							<IconPause class="size-4" aria-hidden="true" />
+						{/if}
+					{/snippet}
+					{audiencePaused ? 'Resume' : 'Pause'} motion
+				</Button>
 			</div>
 		</section>
 

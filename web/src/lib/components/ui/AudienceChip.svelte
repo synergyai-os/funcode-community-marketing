@@ -12,6 +12,10 @@
 		emoji: string;
 		/** Position in the row; desyncs the ambient drift so chips never move in lockstep. */
 		index?: number;
+		/** Freeze the ambient float (e.g. a parent pause control). Hover-pause still works. */
+		paused?: boolean;
+		/** Scales how far the ambient float travels (1 = default). A "playfulness" dial. */
+		amplitude?: number;
 		children: Snippet;
 	};
 
@@ -19,6 +23,8 @@
 		variant = 'neutral',
 		emoji,
 		index = 0,
+		paused = false,
+		amplitude = 1,
 		class: className = '',
 		children,
 		...rest
@@ -67,7 +73,7 @@
 	bind:this={el}
 	class={`audience-chip group inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-semibold tracking-wide whitespace-nowrap uppercase shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-card ${variants[variant]} ${className}`}
 	class:audience-chip--reverse={driftReversed}
-	style={`--drift-dur:${driftDuration}s;--drift-delay:${driftDelay}s`}
+	style={`--drift-dur:${driftDuration}s;--drift-delay:${driftDelay}s;--drift-amp:${amplitude}${paused ? ';animation-play-state:paused' : ''}`}
 	onpointermove={magnetize}
 	onpointerleave={release}
 	onpointercancel={release}
@@ -105,16 +111,16 @@
 			rotate: 0deg;
 		}
 		20% {
-			translate: 8px -7px;
-			rotate: 1.6deg;
+			translate: calc(8px * var(--drift-amp, 1)) calc(-7px * var(--drift-amp, 1));
+			rotate: calc(1.6deg * var(--drift-amp, 1));
 		}
 		50% {
-			translate: 2px -14px;
-			rotate: -0.6deg;
+			translate: calc(2px * var(--drift-amp, 1)) calc(-14px * var(--drift-amp, 1));
+			rotate: calc(-0.6deg * var(--drift-amp, 1));
 		}
 		80% {
-			translate: -8px -7px;
-			rotate: -1.6deg;
+			translate: calc(-8px * var(--drift-amp, 1)) calc(-7px * var(--drift-amp, 1));
+			rotate: calc(-1.6deg * var(--drift-amp, 1));
 		}
 		100% {
 			translate: 0 0;
