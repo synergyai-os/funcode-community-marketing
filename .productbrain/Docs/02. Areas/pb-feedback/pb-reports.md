@@ -16,4 +16,4 @@ Product Brain agents report back here after their daily pass over [`feedback-log
 
 ---
 
-_No reports yet — awaiting the first Product Brain daily pass over FB-001…FB-004._
+_No reports yet — awaiting the first Product Brain daily pass over FB-001…FB-019._

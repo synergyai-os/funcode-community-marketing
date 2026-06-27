@@ -33,7 +33,8 @@ export const personas: Persona[] = [
 		slug: 'product-managers',
 		emoji: '🧭',
 		label: 'Product managers',
-		tagline: 'Ship prototypes instead of polishing slide decks — with agents that remember your decisions.'
+		tagline:
+			'Ship prototypes instead of polishing slide decks — with agents that remember your decisions.'
 	},
 	{
 		id: 'product-leaders',
@@ -48,7 +49,8 @@ export const personas: Persona[] = [
 		slug: 'designers-who-build',
 		emoji: '🎨',
 		label: 'Designers who build now',
-		tagline: 'Sketch in code, poke at prototypes, and keep taste in the loop while agents do the typing.'
+		tagline:
+			'Sketch in code, poke at prototypes, and keep taste in the loop while agents do the typing.'
 	},
 	{
 		id: 'founders',
@@ -69,7 +71,8 @@ export const personas: Persona[] = [
 		slug: 'agent-curious-engineers',
 		emoji: '🤖',
 		label: 'Agent-curious engineers',
-		tagline: 'Stay on the capability curve — models, harnesses, and the humans who make agents work.'
+		tagline:
+			'Stay on the capability curve — models, harnesses, and the humans who make agents work.'
 	},
 	{
 		id: 'teams-going-faster',

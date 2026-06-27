@@ -4,6 +4,8 @@ import type { ChainCaptureManifest } from './chain-capture.types.js';
 import { runEpisodeBrief, writeChainCaptureManifest } from './episode-brief.js';
 import { printVoiceSyncHint, writeVoiceCandidates } from './voices-sync.js';
 import { repoRoot } from './paths.js';
+import { assertNoOrphanCaptures } from './chain-orphan-guard.js';
+import { wireManifestRelations } from './chain-relations.js';
 import { printVerifyReport, runChainVerify } from './chain-verify.js';
 import { execPb } from './pb-exec.js';
 import {
@@ -56,10 +58,6 @@ function assertFunCodeWorkspace(): void {
 function pbCapture(args: string[]): PbCaptureResult {
 	const out = execPb(['--json', ...args]);
 	return parseJsonLines<PbCaptureResult>(out, (p) => typeof p.id === 'string');
-}
-
-function pbRelate(fromId: string, toId: string, type = 'related_to'): void {
-	execPb(['relate', '--if-missing', fromId, type, toId]);
 }
 
 function withLandingSlot(description: string, slot: string): string {
@@ -152,6 +150,7 @@ export function runChainCommit(jobPath: string, options: CommitOptions): void {
 	const guest = draft.episode.guest;
 	const topic = draft.episode.title;
 
+	assertNoOrphanCaptures(videoId, false);
 	assertFunCodeWorkspace();
 	console.log('Starting Product Brain session…');
 	execPb(['session', 'start', '-q']);
@@ -262,31 +261,6 @@ export function runChainCommit(jobPath: string, options: CommitOptions): void {
 		glossaryIns = captured.id;
 	}
 
-	console.log('Linking relations…');
-	pbRelate(guestLand.id, 'LAND-1');
-	pbRelate(guestLand.id, 'WP-1');
-	pbRelate(episodeIns.id, 'LAND-1');
-	pbRelate(episodeIns.id, guestLand.id);
-	pbRelate(episodeIns.id, 'WP-1');
-
-	for (const ins of insightCaptures) {
-		pbRelate(ins.id, episodeIns.id);
-		pbRelate(ins.id, guestLand.id);
-		pbRelate(ins.id, 'WP-1');
-	}
-
-	for (const word of wordCaptures) {
-		pbRelate(word.id, 'GLO-11');
-		pbRelate(word.id, episodeIns.id);
-		pbRelate(word.id, guestLand.id);
-	}
-
-	if (glossaryIns) {
-		pbRelate(glossaryIns, episodeIns.id);
-		pbRelate(glossaryIns, guestLand.id);
-		pbRelate(glossaryIns, 'INS-48');
-	}
-
 	const manifest: ChainCaptureManifest = {
 		capturedAt: new Date().toISOString(),
 		sourceUrl,
@@ -298,6 +272,8 @@ export function runChainCommit(jobPath: string, options: CommitOptions): void {
 		words: wordCaptures,
 		glossaryIns
 	};
+
+	wireManifestRelations(manifest);
 
 	const capturePath = writeChainCaptureManifest(jobPath, manifest);
 	console.log(`Wrote ${capturePath}`);

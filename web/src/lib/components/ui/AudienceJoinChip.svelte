@@ -321,7 +321,6 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <span
 	bind:this={el}
 	class={`audience-join-chip inline-grid overflow-hidden rounded-full border border-accent-soft bg-accent-soft text-sm font-semibold tracking-wide text-accent-strong uppercase shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-card ${showSweepBg ? 'audience-join-chip--active' : ''} ${primed ? 'audience-join-chip--primed' : ''} ${className}`}

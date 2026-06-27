@@ -1,7 +1,14 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { ChainCaptureManifest } from './chain-capture.types.js';
 import type { ExtractionDraft } from './types.js';
+import { jobsRoot } from './paths.js';
+import { personaIdsForLandingSlot } from './landing-slot-personas.js';
+import {
+	loadRegistry,
+	readExistingChainIds,
+	registryPath
+} from './voices-sync-internals.js';
 
 /** Registry entry — merge into web/src/lib/data/voices.ts after Randy reviews quote + personaIds. */
 export type VoiceCandidate = {
@@ -36,18 +43,6 @@ function slugify(text: string): string {
 function voiceCardId(guest: string, label: string): string {
 	const guestPart = slugify(guest.split(/\s+/)[0] ?? guest);
 	return `${guestPart}-${slugify(label)}`;
-}
-
-function registryPath(repoRoot: string): string {
-	return join(repoRoot, '.ingest', 'voices-registry.json');
-}
-
-function loadRegistry(repoRoot: string): VoicesRegistry {
-	const path = registryPath(repoRoot);
-	if (!existsSync(path)) {
-		return { updatedAt: new Date().toISOString(), candidates: [] };
-	}
-	return JSON.parse(readFileSync(path, 'utf8')) as VoicesRegistry;
 }
 
 function saveRegistry(repoRoot: string, registry: VoicesRegistry): void {
@@ -124,26 +119,38 @@ export function printVoiceSyncHint(repoRoot: string): void {
 	console.log(`Report: npm run ingest -- sync-voices  (from ${join(repoRoot, 'ingest')})`);
 }
 
-function readExistingChainIds(voicesTsPath: string): Set<string> {
-	if (!existsSync(voicesTsPath)) return new Set();
-	const src = readFileSync(voicesTsPath, 'utf8');
-	const ids = [...src.matchAll(/chainId:\s*'([^']+)'/g)].map((m) => m[1]!);
-	return new Set(ids);
-}
-
 function formatVoiceSnippet(c: VoiceCandidate): string {
+	const personas = personaIdsForLandingSlot(c.landingSlot);
 	return `	{
 		id: '${c.id}',
 		quote: '${c.quote.replace(/'/g, "\\'")}',
 		name: '${c.name}',
 		role: guestAuthority('${c.name}'),
 		sourceLabel: VOICE_SOURCE_LABEL,
-		personaIds: [/* TODO: map landingSlot ${c.landingSlot} */],
+		personaIds: ${JSON.stringify(personas)},
 		chainId: '${c.chainId}',
 		sourceRef: '${c.sourceRef}',
 		published: false,
 		staged: true
 	}`;
+}
+
+function jobsWithManifestMissingRegistry(existing: Set<string>): string[] {
+	if (!existsSync(jobsRoot)) return [];
+	const warnings: string[] = [];
+	for (const entry of readdirSync(jobsRoot, { withFileTypes: true })) {
+		if (!entry.isDirectory()) continue;
+		const manifestPath = join(jobsRoot, entry.name, 'chain-capture.json');
+		if (!existsSync(manifestPath)) continue;
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as ChainCaptureManifest;
+		const unlinked = manifest.words.filter((w) => !existing.has(w.id));
+		if (unlinked.length > 0) {
+			warnings.push(
+				`${entry.name}: ${unlinked.length} WORD(s) in chain-capture but not in voices.ts — ${unlinked.map((w) => w.id).join(', ')}`
+			);
+		}
+	}
+	return warnings;
 }
 
 /** Compare registry vs voices.ts — print merge checklist for Randy. */
@@ -154,8 +161,17 @@ export function runSyncVoicesReport(repoRoot: string): void {
 
 	console.log(`\nVoice sync — ${registry.candidates.length} registry candidate(s)\n`);
 
+	const jobWarnings = jobsWithManifestMissingRegistry(existing);
+	if (jobWarnings.length > 0) {
+		console.log('Jobs with chain-capture WORDs not yet in voices.ts:');
+		for (const w of jobWarnings) console.log(`  ⚠ ${w}`);
+		console.log('');
+	}
+
 	if (registry.candidates.length === 0) {
-		console.log('No candidates yet. Run PAT-7 commit on an episode with WORD captures.');
+		if (jobWarnings.length === 0) {
+			console.log('No candidates yet. Run PAT-7 commit on an episode with WORD captures.');
+		}
 		return;
 	}
 
@@ -167,7 +183,7 @@ export function runSyncVoicesReport(repoRoot: string): void {
 
 	if (missing.length === 0) {
 		console.log('All registry chainIds exist in voices.ts.');
-		return;
+		if (jobWarnings.length === 0) return;
 	}
 
 	for (const c of missing) {

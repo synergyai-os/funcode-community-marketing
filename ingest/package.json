@@ -6,6 +6,7 @@
   "description": "FunCode podcast ingest — YouTube URL → OpenRouter STT → PAT-7 extraction draft (PAT-8)",
   "scripts": {
     "ingest": "tsx src/cli.ts",
+    "eval": "tsx src/cli.ts eval",
     "check": "tsc --noEmit"
   },
   "dependencies": {

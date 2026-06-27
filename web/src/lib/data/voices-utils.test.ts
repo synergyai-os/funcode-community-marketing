@@ -23,12 +23,7 @@ const sample = (name: string, id: string): Voice => ({
 
 describe('voices-utils', () => {
 	it('interleaves by guest name', () => {
-		const all = [
-			sample('A', 'a1'),
-			sample('A', 'a2'),
-			sample('B', 'b1'),
-			sample('B', 'b2')
-		];
+		const all = [sample('A', 'a1'), sample('A', 'a2'), sample('B', 'b1'), sample('B', 'b2')];
 		const ordered = interleaveByGuest(all).map((v) => v.id);
 		expect(ordered).toEqual(['a1', 'b1', 'a2', 'b2']);
 	});

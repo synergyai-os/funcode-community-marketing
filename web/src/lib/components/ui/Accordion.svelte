@@ -13,7 +13,7 @@
 	let { question, class: className = '', children, ...rest }: Props = $props();
 </script>
 
-<details class={`border-b border-neutral-200 ${className}`} {...rest}>
+<details class={`border-b border-border ${className}`} {...rest}>
 	<summary
 		class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left text-lg font-semibold text-ink transition hover:text-accent-strong focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden"
 	>

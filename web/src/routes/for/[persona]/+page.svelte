@@ -31,7 +31,7 @@
 	</header>
 
 	<main>
-		<section class="border-b border-neutral-200 bg-neutral-50">
+		<section class="border-b border-border bg-surface-muted">
 			<div class="mx-auto max-w-3xl px-6 py-16 text-center sm:py-20">
 				<Badge variant="solid">{persona.emoji} {persona.label}</Badge>
 				<h1 class="mt-6 text-4xl font-black tracking-tight text-balance sm:text-5xl">

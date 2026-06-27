@@ -38,7 +38,7 @@
 
 	const variants: Record<Variant, string> = {
 		accent: 'border-accent-soft bg-accent-soft text-accent-strong',
-		neutral: 'border-neutral-200 bg-white text-ink-soft'
+		neutral: 'border-border bg-surface text-ink-soft'
 	};
 
 	const driftDuration = $derived(5 + (index % 4) * 0.7);
@@ -72,7 +72,6 @@
 		{@render children()}
 	</AudienceJoinChip>
 {:else}
-	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<span
 		bind:this={el}
 		class={`audience-chip group inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-semibold tracking-wide uppercase shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-card ${variants[variant]} ${className}`}

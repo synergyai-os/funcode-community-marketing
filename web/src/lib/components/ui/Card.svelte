@@ -15,7 +15,7 @@
 </script>
 
 <article
-	class={`group rounded-card border border-neutral-200 bg-white p-8 transition hover:-translate-y-1 hover:border-neutral-300 hover:shadow-card ${className}`}
+	class={`group rounded-card border border-border bg-surface p-8 transition hover:-translate-y-1 hover:border-border-strong hover:shadow-card ${className}`}
 	{...rest}
 >
 	{#if icon}

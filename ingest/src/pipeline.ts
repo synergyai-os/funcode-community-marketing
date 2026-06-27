@@ -46,10 +46,14 @@ Requires: .env.local with OPENROUTER_API_KEY, yt-dlp, ffmpeg on PATH.
 Output: .ingest/jobs/<videoId>/ (gitignored). Review before pb capture.
 
 Subcommands:
+  episode --url <youtube-url>     One-shot: ingest → commit/reconcile → brief → verify
   review-glossary --job <videoId>  Glossary candidate summary for AskQuestion (INS-48)
   commit --job <videoId> [--drop-glossary]  Stage 5 → chain-capture.json → brief (PAT-9) → verify (PAT-10)
+  reconcile --job <videoId> [--wire]  Backfill chain-capture.json; --wire links relations + verify
   verify --job <videoId>             PAT-10: verify Chain matches manifest
-  brief --job <videoId>              Blog-style brief with Chain verify tags (PAT-9)`);
+  brief --job <videoId>              Blog-style brief with Chain verify tags (PAT-9)
+  sync-voices                        Registry vs voices.ts merge checklist
+  eval                               PAT-ingest health checks across all jobs`);
 			process.exit(0);
 		}
 	}

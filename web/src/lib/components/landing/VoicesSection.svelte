@@ -43,8 +43,8 @@
 			{#if lockedPersonaId}
 				{personaById(lockedPersonaId).tagline} Swipe through.
 			{:else}
-				Attributed quotes from Lenny's Podcast guests — leaders operating in the AI world
-				today. Swipe through.
+				Attributed quotes from Lenny's Podcast guests — leaders operating in the AI world today.
+				Swipe through.
 			{/if}
 		</p>
 	</div>
@@ -60,8 +60,8 @@
 	{:else if !hasCatalog}
 		<div class="mx-auto mt-12 max-w-xl px-6">
 			<Card title="Thought leaders, soon">
-				Verbatim podcast quotes with source links — staged on Chain, waiting on QUE-5
-				attribution sign-off before we publish publicly. No fabricated names here.
+				Verbatim podcast quotes with source links — staged on Chain, waiting on QUE-5 attribution
+				sign-off before we publish publicly. No fabricated names here.
 			</Card>
 		</div>
 	{/if}

@@ -4,6 +4,86 @@ Append new items to the **top**. Schema and rules in [`README.md`](./README.md).
 
 ---
 
+## FB-019 — pb-feedback edits stay uncommitted unless the human pushes; daily pass may miss same-day items
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** Randy asked when pb-feedback was last updated. FB-012–015 were written earlier on 2026-06-27 but still **unstaged in git**; only FB-011 and below were in the last commit (`8360e95`, 2026-06-26). Product Brain agents read this folder from the repo — not from Randy's working tree.
+- **Detail:** Wish: (1) `pb session close` nudge — "N unstaged lines in pb-feedback/feedback-log.md — commit so PB agents see them", (2) optional `pb feedback append "…"` that writes + stages, or (3) PB daily pass reads from Chain-synced path if feedback ever moves SSOT. Without this, the loop lag is "write today, PB sees tomorrow (if pushed)".
+- **PB response:** —
+
+## FB-018 — `pb session close` prompts Chain captures but not pb-feedback items
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** agent
+- **Status:** new
+- **Priority:** —
+- **Context:** Long UI sessions (hero join chip CTA: hover sweep, drag freeze, refactor into `AudienceJoinChip`) generated **Product Brain tool friction zero times on the Chain** and **zero times in pb-feedback** until Randy explicitly asked. CLAUDE.md says write pb-feedback "as it happens"; agents still batch or skip.
+- **Detail:** `pb session close` already reviews draft captures — extend with: "Any pb-feedback? (CLI friction, orient gaps, exit codes)" and optionally open `.productbrain/Docs/02. Areas/pb-feedback/feedback-log.md` with next FB-NNN scaffold. Separates **FunCode knowledge** (`pb capture`) from **PB product feedback** (feedback-log) so agents don't only close the Chain loop.
+- **PB response:** —
+
+## FB-017 — No eval pattern for motion / micro-interaction UI (hover machines, drag+state, reduced-motion)
+- **Date:** 2026-06-27
+- **Type:** idea
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** Built hero "…and you" → "Join the club" CTA (`AudienceJoinChip`, Motion library, DEC-29 spirit in codebase). PAT-1–5 and draft PAT-11 cover Chain queryability and design-system tokens — **nothing** checks: pointer hover grow/shrink symmetry, drag preserves visual state, `prefers-reduced-motion`, focus vs hover paths, click-after-drag suppression.
+- **Detail:** Idea: optional **PAT-12 motion-interaction** (or PAT-11 extension): e.g. "grep for `jumpToIdle` on drag", "CTA chip uses same drag wrapper as siblings", "no inline `style` resetting CSS vars Motion animates", reduced-motion instant path. Link from `pb get DEC-29` or ROL-2 when ratified. Prevents multi-hour iterate-and-fix cycles that eval would catch in one pass.
+- **PB response:** —
+
+## FB-016 — Extending a Chain-specified component (DEC-38 drag) didn't surface on `pb orient --task` for the new CTA slice
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** agent
+- **Status:** new
+- **Priority:** —
+- **Context:** Hero audience chips are drag-to-place (`DEC-38`, `INS-29`). Adding CTA hover sweep to the `you` chip, the implementation branched `{#if accent}` **without** the drag wrapper — regression caught manually. Agent did not run `pb orient --task "AudienceChip CTA join hover"` or `pb get DEC-38` before building; orient for generic "design system" work (FB-015) didn't mention drag constraints on the same component.
+- **Detail:** Wish: (1) `pb orient --task` includes **constellation warnings** — "you're editing AudienceCluster; related: DEC-38 drag-to-place, INS-29 transform channels", (2) repo path hints in `.productbrain/briefing.md` → linked DEC/INS when touching `AudienceChip.svelte`, (3) `pb search "AudienceChip drag"` surfaces DEC-38 first. Feature extensions should inherit exclusions from the original bet automatically.
+- **PB response:** —
+
+## FB-015 — Governance-dense `pb orient --task` returns a grounding stub; agent must know to `pb get` each ID
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** Design-system eval baseline work — `pb orient --task "design system chain eval baseline code vs chain truth"`. Orient matched DEC-11, STD-*, BR-2, etc. (`totalFound: 25`, `taskAlignment: allow`) but response included `"isGroundingStub": true` and `"groundingNote": "…exceeded the summary budget…fetch full context with tier=standard before complex or consequential decisions"`.
+- **Detail:** Orient correctly *found* the right entries but did not inline enough STD-1/2/3 body to compare against code without follow-up `pb get` calls. For eval/automation agents, wish: (1) when stub triggers, emit a copy-paste block of recommended `pb get` IDs, (2) `--task` flag like `--full` or `tier=standard` for governance-heavy tasks, or (3) orient JSON field `recommendedGets: ["DEC-11","STD-1",…]` so subagents don't skip retrieval thinking orient was sufficient.
+- **PB response:** —
+
+## FB-014 — Domain eval baselines (e.g. design system) aren't discoverable until someone captures a new PAT
+- **Date:** 2026-06-27
+- **Type:** idea
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** Fresh-agent research to validate DEC-11/STD-1/2/3 against code. PAT-1–5 cover community/Chain queryability; **zero** design-system checks (`lint:ds`, token semantics, icon stack). `pb search "design system eval PAT"` returned governance entries (DEC-11, BR-2) but no eval pattern. Agent had to invent PAT-11 and capture it.
+- **Detail:** Idea: (1) eval patterns tagged by domain (`design-system`, `deploy`, `ingest`) queryable via `pb search` or `pb orient --task`, (2) PAT-2 description could reference optional extension PATs (PAT-11 DS checks 22–29) instead of silently staying at "21 checks", (3) onboarding hint when `pb get DEC-11` — "related eval: PAT-11 (when ratified)". Prevents each workspace re-deriving the same eval ladder gaps.
+- **PB response:** —
+
+## FB-013 — `pb update` on a verified standard exits non-zero when unknown fields are stripped, even if the update succeeded
+- **Date:** 2026-06-27
+- **Type:** bug
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** Updating STD-1 to v1.2 (semantic surface tokens, DEC-33 Badge exception, neutral-* ban). Ran `pb update STD-1 -f version=v1.2 -f description="…" -f scope="…"`. JSON response shows description/scope/version **updated** (`updatedAt` changed, searchText reflects new body), but CLI exit code **1** with `"error":"Fields rejected: provisionalAuthorityAnchor."` and `"fieldsRejected": true`.
+- **Detail:** Agent/scripts treating non-zero exit as failure may re-run or report failure despite a successful content update. Wish: (1) exit 0 with warnings when partial update succeeds, (2) strip read-only/internal fields server-side without surfacing as VALIDATION_FAILED, or (3) `--strict` vs default lenient mode. Related to FB-001 false-failure theme (SIGPIPE) — agents need trustworthy exit codes.
+- **PB response:** —
+
+## FB-012 — `pb get` with many IDs in one invocation is slow; agents background it and lose ordering guarantees
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** agent
+- **Status:** new
+- **Priority:** —
+- **Context:** Retrieval pass `pb get DEC-11 STD-1 STD-2 STD-3 BR-2 ROL-2 PAT-1 PAT-2` from repo root. Command exceeded 30s, was backgrounded; only partial JSON returned before timeout in one shell, full output arrived ~80s later in terminal file.
+- **Detail:** Eval/subagent workflows need predictable, fast governance retrieval. Wish: (1) `pb get DEC-11 STD-1 --compact` or `--fields=description,rationale` for lighter payloads, (2) documented batch limit or streaming NDJSON, (3) `pb bundle design-system` meta-entry that returns DEC-11+STD-1/2/3+BR-2 in one round-trip (constellation fetch). Reduces agent timeout/backpressure and duplicate `pb get` calls.
+- **PB response:** —
+
 ## FB-011 — `pb proposals --json` omits proposal `id`; wrong `pb accept` arg returns opaque INTERNAL
 - **Date:** 2026-06-26
 - **Type:** bug

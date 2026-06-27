@@ -45,7 +45,7 @@ export const personaContent: Record<PersonaId, PersonaContent> = {
 	'agent-curious-engineers': {
 		highlights: [
 			'Trust but verify — let agents run, then check the work like a junior teammate.',
-			'Ride the models — stay on the capability curve instead of freezing on yesterday\'s stack.',
+			"Ride the models — stay on the capability curve instead of freezing on yesterday's stack.",
 			'Forward-deployed engineer: someone whose job is making the company agent work for everyone.'
 		]
 	},

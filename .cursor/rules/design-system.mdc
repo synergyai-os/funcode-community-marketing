@@ -21,7 +21,8 @@ pb get ROL-2    # Product Design — owns the system
 
 **Derive from the design system, or update it with Product Design (ROL-2). Never bespoke.**
 
-- **Reuse** the atoms in `web/src/lib/components/ui/` — `Icon`, `Button`, `Badge`, `Card` — and the `@theme` tokens in `web/src/routes/layout.css`.
+- **Reuse** the atoms exported from `web/src/lib/components/ui/` (Icon, Button, Badge, Card, Accordion, Avatar, Marquee, Testimonial, AudienceChip, …) and the `@theme` tokens in `web/src/routes/layout.css`.
+- **Semantic surfaces:** use `bg-surface`, `bg-surface-muted`, `border-border`, `text-muted` — never Tailwind `neutral-*` palette classes.
 - **Icons:** `import IconX from '~icons/lucide/<name>'`; size/color via Tailwind + `currentColor`. Never inline `<svg>`, never `lucide-svelte` or runtime `@iconify/svelte`.
 - **Colors/spacing/radius/shadow:** use tokens (`bg-accent`, `text-ink`, `rounded-card`, …). Never hardcode hex or arbitrary `[...]` values for themed properties.
 - **Buttons:** compose the `Button` atom, never a re-styled raw `<button>`.
@@ -41,4 +42,4 @@ Run before finishing UI work — these fail on bespoke UI:
 cd web && npm run lint   # includes the design-system guard (lint:ds)
 ```
 
-The guard (`web/scripts/check-design-system.mjs`) blocks hardcoded hex, arbitrary themed values, inline `<svg>`, and raw `<button>`. It also runs in CI.
+The guard (`web/scripts/check-design-system.mjs`) blocks hardcoded hex/rgb, arbitrary themed values, inline `<svg>`, raw `<button>`, `neutral-*` palette classes, and forbidden icon imports. Tier 1 eval: `cd web && npm run eval:ds` (PAT-11). Also runs in CI.

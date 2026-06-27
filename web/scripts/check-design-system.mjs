@@ -8,6 +8,8 @@
  *   - Tailwind arbitrary color utilities (e.g. bg-[#abc], text-[--x])
  *   - inline <svg> in components (icons must come via ~icons/lucide/* + Icon atom)
  *   - raw <button> outside the atom layer (use the Button atom)
+ *   - Tailwind neutral-* palette classes (use @theme semantic tokens)
+ *   - forbidden icon libraries (lucide-svelte, @iconify/svelte)
  *
  * Genuine gaps are not silenced here — they are resolved by UPDATING the design
  * system with the Product Design role (ROL-2), per BR-2.
@@ -57,6 +59,27 @@ const rules = [
 		test: /<button[\s>]/,
 		allow: (rel) => rel.includes(ATOM_DIR),
 		msg: 'Raw <button>. Compose the Button atom instead of a re-styled element (STD-3).'
+	},
+	{
+		id: 'no-neutral-palette',
+		ext: /\.(svelte|css|ts)$/,
+		test: /\b(?:bg|text|border|ring|ring-offset|fill|stroke|from|via|to|decoration|outline|caret|accent|shadow)-neutral-/,
+		allow: () => false,
+		msg: 'Tailwind neutral-* palette class. Use semantic @theme tokens (surface, border, muted, etc.) per STD-1.'
+	},
+	{
+		id: 'no-forbidden-icon-lib',
+		ext: /\.(svelte|ts)$/,
+		test: /(?:from\s+['"]lucide-svelte|from\s+['"]@iconify\/svelte)/,
+		allow: () => false,
+		msg: 'Forbidden icon import. Use ~icons/lucide/* build-time imports per STD-2.'
+	},
+	{
+		id: 'no-hardcoded-rgb',
+		ext: /\.(svelte|css)$/,
+		test: /\brgb\s*\(/,
+		allow: (rel) => rel.endsWith(THEME_FILE),
+		msg: 'Hardcoded rgb() color. Define it as a token in layout.css @theme and use the utility (STD-1).'
 	}
 ];
 

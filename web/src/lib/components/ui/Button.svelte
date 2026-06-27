@@ -39,8 +39,8 @@
 
 	const variants: Record<Variant, string> = {
 		primary: 'bg-accent-strong text-white shadow-card hover:bg-accent-strong-hover',
-		secondary: 'border border-neutral-300 text-ink hover:bg-neutral-50',
-		ghost: 'text-ink hover:bg-neutral-100',
+		secondary: 'border border-border-strong text-ink hover:bg-surface-muted',
+		ghost: 'text-ink hover:bg-surface-subtle',
 		soft: 'bg-accent-soft text-accent-strong hover:bg-accent-strong hover:text-white'
 	};
 

@@ -16,7 +16,11 @@
 	import IconChevronLeft from '~icons/lucide/chevron-left';
 	import IconChevronRight from '~icons/lucide/chevron-right';
 
-	let { items, class: className = '', ariaLabel = 'Testimonials' }: {
+	let {
+		items,
+		class: className = '',
+		ariaLabel = 'Testimonials'
+	}: {
 		items: DeckItem[];
 		class?: string;
 		/** Accessible name for the carousel (e.g. member vs thought-leader decks). */
@@ -409,7 +413,7 @@
 			{#each dots as dot (dot)}
 				<span
 					class={`size-2 rounded-full transition-colors duration-300 ${
-						dot === index ? 'bg-accent-strong' : 'bg-neutral-300'
+						dot === index ? 'bg-accent-strong' : 'bg-border-strong'
 					}`}
 				></span>
 			{/each}

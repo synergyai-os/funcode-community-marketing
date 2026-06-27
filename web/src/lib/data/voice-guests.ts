@@ -30,13 +30,23 @@ export const VOICE_GUESTS: VoiceGuest[] = [
 		name: 'Benedict Evans',
 		authority: 'Independent tech analyst',
 		landId: 'LAND-34'
+	},
+	{
+		name: 'Tony Fadell',
+		authority: 'Creator, iPod & iPhone · Nest',
+		landId: 'LAND-35'
+	},
+	{
+		name: 'Cat Wu',
+		authority: 'Head of Product, Claude Code · Anthropic',
+		landId: 'LAND-36'
 	}
 ];
 
 const byName = new Map(VOICE_GUESTS.map((g) => [g.name, g]));
 
 export function guestAuthority(name: string): string {
-	return byName.get(name)?.authority ?? 'Lenny\'s Podcast guest';
+	return byName.get(name)?.authority ?? "Lenny's Podcast guest";
 }
 
 export function guestLandId(name: string): string | undefined {

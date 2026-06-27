@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { heroAudienceChips, personaBySlug, personas } from './personas';
-	import { displayVoices, publishedVoices, voiceCountsByPersona, voices, voicesForPersona } from './voices';
+import {
+	displayVoices,
+	publishedVoices,
+	voiceCountsByPersona,
+	voices,
+	voicesForPersona
+} from './voices';
 
 describe('personas', () => {
 	it('includes product-leaders for strategic voice coverage', () => {
@@ -39,9 +45,9 @@ describe('voices', () => {
 		expect(pm.every((v) => v.personaIds.includes('product-managers'))).toBe(true);
 	});
 
-	it('hides unpublished voices in production display', () => {
-		expect(publishedVoices()).toEqual([]);
-		expect(voices.every((v) => v.published === false)).toBe(true);
+	it('ships published voices in production display', () => {
+		expect(publishedVoices().length).toBe(voices.length);
+		expect(voices.every((v) => v.published === true)).toBe(true);
 	});
 
 	it('marks staged voices ready for QUE-5 publish flip', () => {

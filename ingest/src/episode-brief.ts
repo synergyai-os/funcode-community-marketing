@@ -22,7 +22,11 @@ function slotLabel(slot: string): string {
 }
 
 function verifyTag(id: string | undefined, pending = 'capture pending'): string {
-	return id ? `\`pb get ${id}\`` : `_${pending}_`;
+	if (id) return `\`pb get ${id}\``;
+	if (pending === 'capture pending') {
+		return '_**BLOCKED:** run `npm run ingest -- reconcile --job <videoId> --wire` or `commit` — no chain-capture.json_';
+	}
+	return `_${pending}_`;
 }
 
 function funCodeLens(draft: ExtractionDraft): string {
@@ -151,7 +155,7 @@ export function generateEpisodeBrief(
 		lines.push(`| WORDS | ${wordIds || '—'} |`);
 		if (manifest.glossaryIns) lines.push(`| Glossary bucket | ${manifest.glossaryIns} |`);
 	} else {
-		lines.push('_Run pb capture (PAT-7 stage 5), write `chain-capture.json`, then re-run `brief`._');
+		lines.push('_**BLOCKED:** No `chain-capture.json` — run `npm run ingest -- reconcile --job <videoId> --wire` or `commit`, then re-run `brief`._');
 	}
 	lines.push('');
 	lines.push(`*Prompt ${draft.promptVersion} · Source ${sourceUrl}*`);

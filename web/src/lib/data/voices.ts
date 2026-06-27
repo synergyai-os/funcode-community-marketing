@@ -6,8 +6,7 @@ import { PERSONA_IDS } from './personas.js';
  * Thought-leader voice cards (GLO-11 WORDS) — grouped by persona for landing + `/for/*`.
  *
  * Governance: distinct from member testimonials (TEN-5 consent). Public podcast
- * quotes + sourceRef — ship only when `published: true` after QUE-5 is resolved.
- * `staged: true` = ready for Randy to flip publish. In dev, all entries preview.
+ * quotes + sourceRef — ship when `published: true` (Randy ratifies after QUE-5).
  *
  * Authority lines: `voice-guests.ts` (Chain LAND). Ingest sync: `ingest sync-voices`.
  */
@@ -33,27 +32,26 @@ export type Voice = {
 export const voices: Voice[] = [
 	{
 		id: 'fiona-make-new-mistakes',
-		quote:
-			"It's okay to make mistakes — just make new ones so we're always learning.",
+		quote: "It's okay to make mistakes — just make new ones so we're always learning.",
 		name: 'Fiona Fung',
 		role: guestAuthority('Fiona Fung'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['indie-makers', 'designers-who-build', 'teams-going-faster'],
 		chainId: 'INS-44',
 		sourceRef: 'https://www.youtube.com/watch?v=Ybrl4FYM57c',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'fiona-everything-possible',
-		quote: 'Everything is now possible in theory. Now it\'s about how ambitious can you be?',
+		quote: "Everything is now possible in theory. Now it's about how ambitious can you be?",
 		name: 'Fiona Fung',
 		role: guestAuthority('Fiona Fung'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['founders', 'product-leaders', 'product-managers'],
 		chainId: 'INS-45',
 		sourceRef: 'https://www.youtube.com/watch?v=Ybrl4FYM57c',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
@@ -66,19 +64,20 @@ export const voices: Voice[] = [
 		personaIds: ['designers-who-build', 'product-managers'],
 		chainId: 'INS-42',
 		sourceRef: 'https://www.youtube.com/watch?v=Ybrl4FYM57c',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'fiona-trust-verify',
-		quote: 'Trust but verify — let agents run, then check the work like you would a junior teammate.',
+		quote:
+			'Trust but verify — let agents run, then check the work like you would a junior teammate.',
 		name: 'Fiona Fung',
 		role: guestAuthority('Fiona Fung'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['agent-curious-engineers', 'product-managers'],
 		chainId: 'INS-43',
 		sourceRef: 'https://www.youtube.com/watch?v=Ybrl4FYM57c',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
@@ -91,33 +90,32 @@ export const voices: Voice[] = [
 		personaIds: ['product-managers', 'teams-going-faster'],
 		chainId: 'INS-46',
 		sourceRef: 'https://www.youtube.com/watch?v=Ybrl4FYM57c',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'mark-internet-treasures',
-		quote:
-			'I want to create an internet treasure — a service we can\'t remember life before.',
+		quote: "I want to create an internet treasure — a service we can't remember life before.",
 		name: 'Mark Pincus',
 		role: guestAuthority('Mark Pincus'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['founders', 'product-leaders'],
 		chainId: 'INS-59',
 		sourceRef: 'https://www.youtube.com/watch?v=7eh9C3TUotc',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'mark-define-innovation',
 		quote:
-			'If you\'re truly ambitious, burn the resume — define innovation in the eyes of your consumer, not your peers.',
+			"If you're truly ambitious, burn the resume — define innovation in the eyes of your consumer, not your peers.",
 		name: 'Mark Pincus',
 		role: guestAuthority('Mark Pincus'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['founders', 'product-leaders'],
 		chainId: 'INS-56',
 		sourceRef: 'https://www.youtube.com/watch?v=7eh9C3TUotc',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
@@ -130,33 +128,32 @@ export const voices: Voice[] = [
 		personaIds: ['founders', 'indie-makers'],
 		chainId: 'INS-58',
 		sourceRef: 'https://www.youtube.com/watch?v=7eh9C3TUotc',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'mark-lightning-bottle',
 		quote:
-			'If you\'re asking whether your product is an A, it\'s not an A — when it\'s real, you feel it.',
+			"If you're asking whether your product is an A, it's not an A — when it's real, you feel it.",
 		name: 'Mark Pincus',
 		role: guestAuthority('Mark Pincus'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['founders', 'product-managers'],
 		chainId: 'INS-57',
 		sourceRef: 'https://www.youtube.com/watch?v=7eh9C3TUotc',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'mark-moral-arbitrage',
-		quote:
-			'Innovation can start by copying what works — uncomfortable, but strategic.',
+		quote: 'Innovation can start by copying what works — uncomfortable, but strategic.',
 		name: 'Mark Pincus',
 		role: guestAuthority('Mark Pincus'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['founders', 'product-leaders'],
 		chainId: 'INS-55',
 		sourceRef: 'https://www.youtube.com/watch?v=7eh9C3TUotc',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
@@ -168,46 +165,45 @@ export const voices: Voice[] = [
 		personaIds: ['agent-curious-engineers', 'product-managers'],
 		chainId: 'INS-64',
 		sourceRef: 'https://www.youtube.com/watch?v=4D3hDmGhFhA',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'dan-forward-deployed',
 		quote:
-			'Set up a forward-deployed engineer — someone whose job is making the company\'s agent work for everyone.',
+			"Set up a forward-deployed engineer — someone whose job is making the company's agent work for everyone.",
 		name: 'Dan Shipper',
 		role: guestAuthority('Dan Shipper'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['agent-curious-engineers', 'teams-going-faster'],
 		chainId: 'INS-66',
 		sourceRef: 'https://www.youtube.com/watch?v=4D3hDmGhFhA',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'dan-frozen-competence',
 		quote:
-			'Models commoditize yesterday\'s human competence — the skill is staying ahead of the curve.',
+			"Models commoditize yesterday's human competence — the skill is staying ahead of the curve.",
 		name: 'Dan Shipper',
 		role: guestAuthority('Dan Shipper'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['agent-curious-engineers', 'product-leaders'],
 		chainId: 'INS-68',
 		sourceRef: 'https://www.youtube.com/watch?v=4D3hDmGhFhA',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'dan-spaciousness',
-		quote:
-			'When something is hard, relate to it from strength and spaciousness — not panic.',
+		quote: 'When something is hard, relate to it from strength and spaciousness — not panic.',
 		name: 'Dan Shipper',
 		role: guestAuthority('Dan Shipper'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['teams-going-faster', 'product-leaders'],
 		chainId: 'INS-70',
 		sourceRef: 'https://www.youtube.com/watch?v=4D3hDmGhFhA',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
@@ -219,32 +215,32 @@ export const voices: Voice[] = [
 		personaIds: ['product-leaders', 'founders'],
 		chainId: 'INS-86',
 		sourceRef: 'https://www.youtube.com/watch?v=BD3vLtWhT5A',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'benedict-1997',
 		quote:
-			'We\'re in 1997 for AI — exciting, most stuff doesn\'t work yet, and the big apps aren\'t built.',
+			"We're in 1997 for AI — exciting, most stuff doesn't work yet, and the big apps aren't built.",
 		name: 'Benedict Evans',
 		role: guestAuthority('Benedict Evans'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['product-leaders', 'product-managers', 'founders'],
 		chainId: 'INS-88',
 		sourceRef: 'https://www.youtube.com/watch?v=BD3vLtWhT5A',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
 		id: 'benedict-it-depends',
-		quote: 'It depends — the honest answer when the future hasn\'t been built yet.',
+		quote: "It depends — the honest answer when the future hasn't been built yet.",
 		name: 'Benedict Evans',
 		role: guestAuthority('Benedict Evans'),
 		sourceLabel: VOICE_SOURCE_LABEL,
 		personaIds: ['product-leaders', 'product-managers'],
 		chainId: 'INS-90',
 		sourceRef: 'https://www.youtube.com/watch?v=BD3vLtWhT5A',
-		published: false,
+		published: true,
 		staged: true
 	},
 	{
@@ -256,7 +252,135 @@ export const voices: Voice[] = [
 		personaIds: ['teams-going-faster', 'indie-makers'],
 		chainId: 'INS-87',
 		sourceRef: 'https://www.youtube.com/watch?v=BD3vLtWhT5A',
-		published: false,
+		published: true,
+		staged: true
+	},
+	{
+		id: 'tony-cognitively-surrender',
+		quote:
+			"You still need humans in the loop. Don't surrender to the machine — use AI, but don't cognitively surrender.",
+		name: 'Tony Fadell',
+		role: guestAuthority('Tony Fadell'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['agent-curious-engineers', 'product-leaders', 'product-managers'],
+		chainId: 'INS-106',
+		sourceRef: 'https://www.youtube.com/watch?v=RJjl1TwyfWM',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'tony-three-generations',
+		quote:
+			'Make the product, fix the product, then fix the business — no one gets it all right the first time.',
+		name: 'Tony Fadell',
+		role: guestAuthority('Tony Fadell'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['founders', 'product-leaders', 'indie-makers'],
+		chainId: 'INS-108',
+		sourceRef: 'https://www.youtube.com/watch?v=RJjl1TwyfWM',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'tony-start-from-pain',
+		quote: "I always start from pain — some people start elsewhere, but that's where I start.",
+		name: 'Tony Fadell',
+		role: guestAuthority('Tony Fadell'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['founders', 'product-managers', 'indie-makers'],
+		chainId: 'INS-109',
+		sourceRef: 'https://www.youtube.com/watch?v=RJjl1TwyfWM',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'tony-technology-serves-customer',
+		quote: 'The technology is in service of the customer — not jamming tech down their throat.',
+		name: 'Tony Fadell',
+		role: guestAuthority('Tony Fadell'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['product-managers', 'designers-who-build', 'founders'],
+		chainId: 'INS-107',
+		sourceRef: 'https://www.youtube.com/watch?v=RJjl1TwyfWM',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'tony-benevolent-dictatorship',
+		quote:
+			"For a 1.0 product, this is a benevolent dictatorship — here's the vision. We won't know until we ship and hear from users.",
+		name: 'Tony Fadell',
+		role: guestAuthority('Tony Fadell'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['founders', 'product-leaders'],
+		chainId: 'INS-105',
+		sourceRef: 'https://www.youtube.com/watch?v=RJjl1TwyfWM',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'cat-remove-barriers',
+		quote:
+			'We want to remove every single barrier to shipping — timelines went from six months to one week, sometimes one day.',
+		name: 'Cat Wu',
+		role: guestAuthority('Cat Wu'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['founders', 'product-leaders', 'product-managers'],
+		chainId: 'INS-119',
+		sourceRef: 'https://www.youtube.com/watch?v=PplmzlgE0kg',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'cat-just-do-things',
+		quote:
+			"Just do things. If you know what you're optimizing for and you have strong first principles, you can normally deduce the right course of action.",
+		name: 'Cat Wu',
+		role: guestAuthority('Cat Wu'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['product-leaders', 'founders'],
+		chainId: 'INS-120',
+		sourceRef: 'https://www.youtube.com/watch?v=PplmzlgE0kg',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'cat-agi-pilled',
+		quote:
+			"It's hard to be the right amount of AGI-pilled. The hard thing is eliciting maximum capability from the current model, not the super-AGI fantasy.",
+		name: 'Cat Wu',
+		role: guestAuthority('Cat Wu'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['product-leaders', 'product-managers', 'teams-going-faster'],
+		chainId: 'INS-121',
+		sourceRef: 'https://www.youtube.com/watch?v=PplmzlgE0kg',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'cat-concept-corner',
+		quote:
+			"Make a concept corner of the product suite — an engineer or PM has an idea and by end of week it's in users' hands.",
+		name: 'Cat Wu',
+		role: guestAuthority('Cat Wu'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['indie-makers', 'designers-who-build', 'teams-going-faster'],
+		chainId: 'INS-122',
+		sourceRef: 'https://www.youtube.com/watch?v=PplmzlgE0kg',
+		published: true,
+		staged: true
+	},
+	{
+		id: 'cat-buggy-launch',
+		quote:
+			'Launching something buggy used to keep me up at night. Now I can live with it — we get quick feedback and fix it in the next release.',
+		name: 'Cat Wu',
+		role: guestAuthority('Cat Wu'),
+		sourceLabel: VOICE_SOURCE_LABEL,
+		personaIds: ['founders', 'indie-makers', 'designers-who-build'],
+		chainId: 'INS-123',
+		sourceRef: 'https://www.youtube.com/watch?v=PplmzlgE0kg',
+		published: true,
 		staged: true
 	}
 ];

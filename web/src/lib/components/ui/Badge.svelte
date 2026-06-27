@@ -29,7 +29,7 @@
 	const variants: Record<Variant, { pill: string; dot: string }> = {
 		solid: { pill: 'border-accent bg-accent text-white', dot: 'bg-white' },
 		accent: { pill: 'border-accent-soft bg-accent-soft text-accent-strong', dot: 'bg-accent' },
-		neutral: { pill: 'border-neutral-200 bg-white/70 text-neutral-600', dot: 'bg-accent' }
+		neutral: { pill: 'border-border bg-surface/70 text-muted-soft', dot: 'bg-accent' }
 	};
 
 	const sizes: Record<Size, { pill: string; dot: string }> = {

@@ -133,9 +133,7 @@
 						<IconArrowRight class="size-5" aria-hidden="true" />
 					{/snippet}
 				</Button>
-				<p class="text-center text-sm text-neutral-500">
-					Free forever. No spam — just the good stuff.
-				</p>
+				<p class="text-center text-sm text-muted">Free forever. No spam — just the good stuff.</p>
 			</form>
 		{/if}
 	</div>
@@ -153,7 +151,7 @@
 	}
 
 	.join-modal::backdrop {
-		background: rgb(11 11 15 / 0.55);
+		background: color-mix(in srgb, var(--color-ink) 55%, transparent);
 		backdrop-filter: blur(4px);
 	}
 
@@ -162,7 +160,7 @@
 		overflow: hidden;
 		border-radius: var(--radius-card);
 		border: 1px solid var(--color-accent-soft);
-		background: white;
+		background: var(--color-surface);
 		padding: 2rem 1.75rem;
 		box-shadow: var(--shadow-card-lifted);
 	}
@@ -203,8 +201,8 @@
 		display: block;
 		width: 100%;
 		border-radius: 9999px;
-		border: 1px solid rgb(212 212 216);
-		background: white;
+		border: 1px solid var(--color-border-strong);
+		background: var(--color-surface);
 		padding: 0.875rem 1.25rem;
 		font-size: 1rem;
 		font-weight: 500;
@@ -215,7 +213,7 @@
 	}
 
 	.join-modal__input::placeholder {
-		color: rgb(113 113 122);
+		color: var(--color-muted);
 	}
 
 	.join-modal__input:focus {

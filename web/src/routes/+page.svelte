@@ -187,7 +187,7 @@
 	<title>FunCode — Everyone can create</title>
 </svelte:head>
 
-<div class="min-h-screen bg-white text-ink">
+<div class="min-h-screen bg-surface text-ink">
 	<a
 		href="#main"
 		class="sr-only rounded-card bg-ink px-4 py-2 font-semibold text-white focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:not-sr-only focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
@@ -273,9 +273,7 @@
 					</Button>
 				</div>
 
-				<p class="mt-5 text-sm text-neutral-500">
-					Free forever. No paywall to belong, learn, or build.
-				</p>
+				<p class="mt-5 text-sm text-muted">Free forever. No paywall to belong, learn, or build.</p>
 			</div>
 
 			<!-- Pause/resume for the cluster's ambient float (WCAG 2.2.2). Kept here, low
@@ -301,7 +299,7 @@
 		</section>
 
 		<!-- The shift: PR → PROD becomes PRs as a playground (INS-18, STR-2) -->
-		<section id="how" class="border-y border-neutral-200 bg-neutral-50">
+		<section id="how" class="border-y border-border bg-surface-muted">
 			<div class="mx-auto max-w-6xl px-6 py-20 sm:py-24">
 				<div class="mx-auto max-w-2xl text-center">
 					<Badge variant="neutral">The shift</Badge>
@@ -318,12 +316,12 @@
 					{#each shiftSides as side, i (side.title)}
 						<article
 							class={`rounded-card border p-8 ${
-								i === 0 ? 'border-neutral-200 bg-white' : 'border-accent-soft bg-accent-soft/40'
+								i === 0 ? 'border-border bg-surface' : 'border-accent-soft bg-accent-soft/40'
 							}`}
 						>
 							<div
 								class={`grid size-12 place-items-center rounded-card ${
-									i === 0 ? 'bg-neutral-100 text-ink-soft' : 'bg-accent-soft text-accent'
+									i === 0 ? 'bg-surface-subtle text-ink-soft' : 'bg-accent-soft text-accent'
 								}`}
 							>
 								{#if i === 0}
@@ -359,7 +357,7 @@
 		</section>
 
 		<!-- Start in 3 steps (FLO-1) -->
-		<section class="border-y border-neutral-200 bg-neutral-50">
+		<section class="border-y border-border bg-surface-muted">
 			<div class="mx-auto max-w-6xl px-6 py-20 sm:py-24">
 				<div class="mx-auto max-w-2xl text-center">
 					<Badge variant="neutral">Get going</Badge>
@@ -373,14 +371,14 @@
 
 				<ol class="mt-12 grid gap-6 sm:grid-cols-3">
 					{#each steps as step (step.n)}
-						<li class="rounded-card border border-neutral-200 bg-white p-8">
+						<li class="rounded-card border border-border bg-surface p-8">
 							<div class="flex items-center justify-between">
 								<div
 									class="grid size-12 place-items-center rounded-card bg-accent-soft text-accent"
 								>
 									<step.icon class="size-6" aria-hidden="true" />
 								</div>
-								<span class="text-2xl font-black text-neutral-200">{step.n}</span>
+								<span class="text-2xl font-black text-faint">{step.n}</span>
 							</div>
 							<h3 class="mt-5 text-xl font-bold">{step.title}</h3>
 							<p class="mt-2 text-ink-soft">{step.body}</p>
@@ -405,13 +403,13 @@
 			<ul class="mx-auto mt-12 grid max-w-4xl gap-3 sm:grid-cols-2">
 				{#each ladder as rung, i (rung.label)}
 					<li
-						class="flex items-center gap-4 rounded-card border border-neutral-200 bg-white px-5 py-4"
+						class="flex items-center gap-4 rounded-card border border-border bg-surface px-5 py-4"
 					>
 						<span class="grid size-9 place-items-center rounded-full bg-accent-soft text-accent">
 							<rung.icon class="size-5" aria-hidden="true" />
 						</span>
 						<span class="font-semibold">{rung.label}</span>
-						<span class="ml-auto text-sm font-medium text-neutral-500">
+						<span class="ml-auto text-sm font-medium text-muted">
 							{String(i + 1).padStart(2, '0')}
 						</span>
 					</li>
@@ -420,7 +418,7 @@
 		</section>
 
 		<!-- Who it's for (AUD-1, INS-11) -->
-		<section class="border-y border-neutral-200 bg-neutral-50">
+		<section class="border-y border-border bg-surface-muted">
 			<div class="mx-auto max-w-4xl px-6 py-20 text-center sm:py-24">
 				<Badge variant="neutral">Who it's for</Badge>
 				<h2 class="mt-6 text-3xl font-black tracking-tight text-balance sm:text-4xl">
@@ -530,11 +528,13 @@
 
 			<div class="mt-6 grid gap-6 md:grid-cols-2">
 				{#each optionalWays as way (way.title)}
-					<article class="flex flex-col rounded-card border border-neutral-200 bg-white p-8">
-						<div class="grid size-12 place-items-center rounded-card bg-neutral-100 text-ink-soft">
+					<article class="flex flex-col rounded-card border border-border bg-surface p-8">
+						<div
+							class="grid size-12 place-items-center rounded-card bg-surface-subtle text-ink-soft"
+						>
 							<way.icon class="size-6" aria-hidden="true" />
 						</div>
-						<p class="mt-5 text-xs font-semibold tracking-wide uppercase text-neutral-500">
+						<p class="mt-5 text-xs font-semibold tracking-wide uppercase text-muted">
 							{way.eyebrow}
 						</p>
 						<h3 class="mt-2 text-xl font-bold">{way.title}</h3>
@@ -546,13 +546,13 @@
 				{/each}
 			</div>
 
-			<p class="mt-8 text-center text-sm text-neutral-500">
+			<p class="mt-8 text-center text-sm text-muted">
 				Optional tools and services — never a gate to the community.
 			</p>
 		</section>
 
 		<!-- FAQ -->
-		<section id="faq" class="border-y border-neutral-200 bg-neutral-50">
+		<section id="faq" class="border-y border-border bg-surface-muted">
 			<div class="mx-auto max-w-3xl px-6 py-20 sm:py-24">
 				<div class="text-center">
 					<Badge variant="neutral">FAQ</Badge>
@@ -561,7 +561,7 @@
 					</h2>
 				</div>
 
-				<div class="mt-10 border-t border-neutral-200">
+				<div class="mt-10 border-t border-border">
 					{#each faqs as faq (faq.q)}
 						<Accordion question={faq.q}>{faq.a}</Accordion>
 					{/each}
@@ -580,7 +580,7 @@
 				<h2 class="relative text-3xl font-black tracking-tight text-balance sm:text-5xl">
 					Come build with us.
 				</h2>
-				<p class="relative mx-auto mt-4 max-w-xl text-neutral-300">
+				<p class="relative mx-auto mt-4 max-w-xl text-on-dark-muted">
 					We're not here to sell you a stack — we're here to help you build good products with AI:
 					for yourself, your team, or your organisation.
 				</p>
@@ -589,9 +589,9 @@
 		</section>
 	</main>
 
-	<footer class="border-t border-neutral-200">
+	<footer class="border-t border-border">
 		<div
-			class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-8 text-sm text-neutral-500 sm:flex-row"
+			class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-8 text-sm text-muted sm:flex-row"
 		>
 			<p>© {year} FunCode. Everyone can create.</p>
 			<p>Built with SvelteKit + Tailwind.</p>

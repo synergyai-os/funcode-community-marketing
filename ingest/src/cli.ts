@@ -1,6 +1,9 @@
 #!/usr/bin/env node
+import { parseReconcileArgs, runFullReconcile } from './chain-reconcile.js';
 import { parseCommitArgs, runChainCommit } from './chain-commit.js';
 import { parseVerifyArgs, printVerifyReport, runChainVerify } from './chain-verify.js';
+import { parseEpisodeArgs, runEpisodePipeline } from './episode-run.js';
+import { printIngestEval } from './ingest-eval.js';
 import { runEpisodeBrief } from './episode-brief.js';
 import { runGlossaryReview, runIngest } from './pipeline.js';
 import { jobDir, repoRoot } from './paths.js';
@@ -23,6 +26,19 @@ function dispatch(): Promise<void> {
 		const report = runChainVerify(jobDir(job));
 		printVerifyReport(report);
 		if (!report.passed) process.exit(1);
+		return Promise.resolve();
+	}
+	if (command === 'reconcile') {
+		const { job, options } = parseReconcileArgs(rest);
+		runFullReconcile(jobDir(job), options);
+		return Promise.resolve();
+	}
+	if (command === 'episode') {
+		const { url, options } = parseEpisodeArgs(rest);
+		return runEpisodePipeline(url, options).then(() => undefined);
+	}
+	if (command === 'eval') {
+		printIngestEval();
 		return Promise.resolve();
 	}
 	if (command === 'sync-voices') {

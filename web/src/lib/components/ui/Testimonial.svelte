@@ -32,12 +32,13 @@
 </script>
 
 <figure
-	class={`flex h-full flex-col rounded-card border border-neutral-200 bg-white p-7 shadow-card sm:p-8 ${className}`}
+	class={`flex h-full flex-col rounded-card border border-border bg-surface p-7 shadow-card sm:p-8 ${className}`}
 	{...rest}
 >
 	<div class="flex items-start justify-between gap-4">
 		<IconQuote class="size-7 shrink-0 text-accent" aria-hidden="true" />
 		{#if showSource}
+			<!-- eslint-disable svelte/no-navigation-without-resolve -- external source URLs -->
 			<a
 				href={sourceHref}
 				target="_blank"
@@ -48,11 +49,13 @@
 				<IconExternalLink class="size-3.5 shrink-0" aria-hidden="true" />
 				<span class="sr-only"> (opens in a new tab)</span>
 			</a>
+			<!-- eslint-enable svelte/no-navigation-without-resolve -->
 		{/if}
 	</div>
 	<blockquote class="mt-5 grow text-lg leading-relaxed text-pretty text-ink">{quote}</blockquote>
 
 	{#if showSource}
+		<!-- eslint-disable svelte/no-navigation-without-resolve -- external source URLs -->
 		<a
 			href={sourceHref}
 			target="_blank"
@@ -63,6 +66,7 @@
 			<IconExternalLink class="size-3.5 shrink-0" aria-hidden="true" />
 			<span class="sr-only"> (opens in a new tab)</span>
 		</a>
+		<!-- eslint-enable svelte/no-navigation-without-resolve -->
 	{/if}
 
 	<figcaption class="mt-7 flex items-center gap-3">
