@@ -6,6 +6,19 @@ import { defineConfig } from 'vite';
 import Icons from 'unplugin-icons/vite';
 
 export default defineConfig(({ mode }) => ({
+	// Dev server is pinned and resilient on purpose (INS-31):
+	// • port 1234 + strictPort — FunCode always lives at http://localhost:1234, so a
+	//   bookmarked tab never points at a dead, auto-incremented port. If 1234 is busy
+	//   the start fails loudly (kill the stale process) instead of silently moving.
+	// • watch.usePolling — this repo lives in a Dropbox-synced folder, where native
+	//   fsevents are unreliable and edits often don't trigger HMR. Polling makes saves
+	//   render instantly without a manual restart. Slight CPU cost, worth it here.
+	server: {
+		port: 1234,
+		strictPort: true,
+		watch: { usePolling: true, interval: 100 }
+	},
+	preview: { port: 1234, strictPort: true },
 	plugins: [
 		tailwindcss(),
 		Icons({ compiler: 'svelte' }),
