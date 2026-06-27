@@ -1,0 +1,70 @@
+---
+description: YouTube podcast ingest — consent gate, PAT-8 pipeline, PAT-10 verify + session learning
+alwaysApply: true
+---
+
+# Episode ingest (Lenny's Podcast → Chain)
+
+Retrieve before any ingest work: `pb get PAT-8 PAT-9 PAT-10 INS-48`.
+
+## Stage 0 — YouTube URL detected
+
+When the user message contains `youtube.com`, `youtu.be`, or `/shorts/`:
+
+1. **Stop** — do not run `npm run ingest`, `yt-dlp`, or `pb capture` until intent is clear.
+2. **AskQuestion** (required unless user already chose an option in the same message):
+
+   | Option | Action |
+   |--------|--------|
+   | **Full pipeline** | Stages 1–7 (default if they say "process" / "ingest") |
+   | **Extract only** | `ingest --url` — no Chain commit |
+   | **Verify / brief only** | Job exists — `verify` and/or `brief` |
+   | **Check Chain first** | `pb search "<videoId>"` before spending on STT |
+   | **Just discuss** | No pipeline |
+
+3. Bare URL with no other text → treat as ingest intent but **still ask**.
+
+## Stages 1–5 — Pipeline (PAT-8)
+
+From repo root, `cd ingest/`:
+
+```bash
+npm run ingest -- --url "<youtube-url>"
+npm run ingest -- commit --job <videoId> --drop-glossary
+```
+
+- Dedupe: skip STT if `.ingest/jobs/<videoId>/chain-capture.json` exists unless `--force`.
+- Glossary: INS-48 default — `--drop-glossary`, 0 new GLO unless founder opts in via chat.
+- `pb` calls go through `ingest/src/pb-exec.ts` (Homebrew pb — proto shim lacks `-f`).
+
+## Stage 6 — Verify Chain (PAT-10, mandatory)
+
+After every commit, verify must pass before declaring done:
+
+```bash
+npm run ingest -- verify --job <videoId>
+```
+
+(`commit` runs this automatically unless `--skip-verify`.)
+
+**Fail closed:** if verify fails, fix captures or report blockers — do not paste the brief as "complete."
+
+Checks: workspace FunCode, every manifest ID resolves, counts match draft, sourceRef contains videoId, required relations (episode ↔ LAND-1, guest, WP-1; WORDS ↔ GLO-11; glossary ↔ INS-48).
+
+## Stage 7 — Session learning (mandatory)
+
+Before `pb session close`, answer in chat:
+
+1. **What broke or was ambiguous?**
+2. **Chain update?** → `pb capture` INS/TEN/STD (FunCode knowledge); link PAT-8/PAT-10 if stages drift.
+3. **Rule update?** → edit this file when agent behavior should change; repeat friction twice = must update rule.
+4. **pb tool friction?** → `.productbrain/Docs/02. Areas/pb-feedback/feedback-log.md` (not Chain SSOT).
+
+Even clean runs: one-line confirmation ("verify passed, no friction") is enough.
+
+## Do not
+
+- Skip AskQuestion on YouTube URLs.
+- Mark episode ingest complete without PAT-10 verify pass.
+- End session without Stage 7 retrospective.
+- Use bare `spawnSync('pb')` in ingest code — use `pb-exec.ts`.

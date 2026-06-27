@@ -1,7 +1,21 @@
 {
   "version": 1,
   "hooks": {
+    "beforeReadFile": [
+      {
+        "command": ".cursor/hooks/secrets-read-gate.sh",
+        "failClosed": true
+      }
+    ],
     "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/production-gate.sh",
+        "failClosed": true
+      },
+      {
+        "command": ".cursor/hooks/secrets-shell-gate.sh",
+        "failClosed": true
+      },
       {
         "command": ".cursor/hooks/deploy-gate.sh",
         "matcher": "railway|vercel|netlify|wrangler|flyctl|convex deploy|git push"

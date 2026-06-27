@@ -15,6 +15,9 @@
 .productbrain/config.local.json
 .productbrain/session.json
 
+# Ingest pipeline local artifacts (PAT-8) — Chain is SSOT after review
+.ingest/
+
 # Dependencies & build output
 node_modules/
 web/.svelte-kit/
@@ -22,6 +25,8 @@ web/build/
 .output/
 .vercel/
 .netlify/
+ingest/node_modules/
+ingest/dist/
 
 # OS
 .DS_Store

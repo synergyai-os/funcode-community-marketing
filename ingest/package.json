@@ -1,0 +1,22 @@
+{
+  "name": "@funcode/ingest",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "FunCode podcast ingest — YouTube URL → OpenRouter STT → PAT-7 extraction draft (PAT-8)",
+  "scripts": {
+    "ingest": "tsx src/cli.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
