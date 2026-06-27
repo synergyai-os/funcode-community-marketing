@@ -4,6 +4,76 @@ Append new items to the **top**. Schema and rules in [`README.md`](./README.md).
 
 ---
 
+## FB-026 — Community builders need a "pb for beginners" path; orient/handshake assume you already know the Chain
+- **Date:** 2026-06-27
+- **Type:** idea
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** FunCode's whole bet is teaching people to build with AI. Agents use `pb whoami`, `pb orient`, `pb get`, capture hygiene daily — but a newcomer hitting the repo sees 572 Chain entries and adapter files with no graduated ladder.
+- **Detail:** Idea: (1) `pb tour` or `pb orient --onboard` — 5-step interactive path (whoami → get WP-1 → search one term → capture a draft INS → session close), (2) handshake emits a **single-page** "first 10 commands" card linked from funcode.club/play-room docs, (3) workspace `stage: teaching` mode that suppresses governance stub noise and surfaces PAT-1 as the first eval. Makes Product Brain legible as a community tool, not just Randy's governance OS.
+- **PB response:** —
+
+## FB-025 — No first-class way to export a capture manifest after MCP/agent sessions (Fiona orphan → 13/39 verify failures)
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** Episode ingest for Fiona (`Ybrl4FYM57c`). Agent used MCP to `pb capture` episode, LAND, insights, WORDS — but never wrote local `chain-capture.json`. PAT-9 brief showed `_capture pending_`; PAT-10 couldn't run. We hand-built `chain-reconcile-manifest.ts` + `pb search` heuristics + `pb relate --if-missing` to recover.
+- **Detail:** Wish: `pb export-manifest --source-ref <videoId>` (or `--search "Ybrl4FYM57c"`) → JSON matching our manifest shape: episodeIns, guestLand, insights[], words[], glossaryIns, capturedAt. Bonus: `pb relate --manifest file.json --if-missing` as a documented recovery path. Would have saved ~2h and prevented "report sucks" moment. Relates to PAT-8/PAT-10 — agents shouldn't reimplement search+sort heuristics per workspace.
+- **PB response:** —
+
+## FB-024 — `pb search` can't filter by sourceRef; orphan detection required custom TypeScript in ingest
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** agent
+- **Status:** new
+- **Priority:** —
+- **Context:** Pre-commit orphan guard (`chain-orphan-guard.ts`) must answer: "does Chain already have an episode for this YouTube videoId?" Implemented as two searches + client-side filter `sourceRef.includes(videoId)`.
+- **Detail:** Wish: `pb search --source-ref-contains <videoId>` or `pb search Ybrl4FYM57c --field sourceRef`. Also: `pb search --collection insights --name-prefix "Episode:"` to avoid false positives. Dedupe is safety-critical for ingest — false negative = duplicate captures on Chain; false positive = blocked commit. CLI filter beats every workspace reimplementing the same glue.
+- **PB response:** —
+
+## FB-023 — Batch promote for a session's drafts (Cat Wu: 15 entries, one explicit "promote all")
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** human
+- **Status:** new
+- **Priority:** —
+- **Context:** After Cat Wu episode ingest (`PplmzlgE0kg`), Randy said "promote all" — episode shell, LAND-36, 5 learnings, 5 WORDS, glossary INS-124 (`INS-111`–`INS-124`). Agent ran `pb promote` per ID (or batch if supported — friction either way).
+- **Detail:** Wish: `pb promote --session` (all drafts from current `pb session start`), or `pb promote INS-111..INS-124` range, or `pb promote --from-manifest chain-capture.json`. Voice-card QUE-5 workflow often promotes a **constellation** at once after human review — one command, confirm list, done.
+- **PB response:** —
+
+## FB-022 — `pb relate --if-missing` is the unsung hero of ingest recovery (like)
+- **Date:** 2026-06-27
+- **Type:** like
+- **For:** both
+- **Status:** new
+- **Priority:** —
+- **Context:** Fiona episode verify went **26/39 → 39/39** after `reconcile --wire` called `wireManifestRelations()` — all relation checks use `pb relate --if-missing`. Idempotent, safe to re-run, no duplicate relation errors.
+- **Detail:** This flag should be **documented prominently** in PAT-style ingest recovery: "MCP captured entries but verify fails on relations → relate --if-missing graph, re-verify." Consider `pb relate --manifest <file> --if-missing` as a first-class subcommand so workspaces don't wrap it in TypeScript. Delight: `pb verify --job` could suggest exact relate commands for missing edges (today we infer in `chain-verify.ts`).
+- **PB response:** —
+
+## FB-021 — Ingest-heavy sessions capture learnings to Chain (PAT-10) but skip pb-feedback until Randy asks
+- **Date:** 2026-06-27
+- **Type:** dislike
+- **For:** agent
+- **Status:** new
+- **Priority:** —
+- **Context:** This conversation: built `episode` one-shot command, orphan guard, `reconcile --wire`, `ingest eval`, wired Fiona to 39/39, merged Cat Wu voices. Multiple `pb` friction points (MCP orphan, search filter, promote batch) — **zero pb-feedback items written** until Randy said "give any feedback you want." Chain got PAT-10 captures; pb-feedback loop stayed silent.
+- **Detail:** Agents treat pb-feedback as optional despite CLAUDE.md "write as it happens." Wish: (1) hard rule in handshake — "after any session using `pb` >5 times, append ≥1 FB item if anything was surprising", (2) `pb session close` interactive prompt with pre-filled FB-NNN template from session command history, (3) distinguish **FunCode INS** (domain learnings) vs **FB** (tool friction) in agent adapters with examples: "MCP left orphan captures" → FB; "verification is the new bottleneck" → INS. PB can't improve if only Randy files feedback.
+- **PB response:** —
+
+## FB-020 — `pb orient --task "episode ingest"` should surface PAT-8/9/10 + INS-48 as a bundle, not generic governance stub
+- **Date:** 2026-06-27
+- **Type:** wish
+- **For:** agent
+- **Status:** new
+- **Priority:** —
+- **Context:** Episode ingest rule points to `pb get PAT-8 PAT-9 PAT-10 INS-48`. Agents still skip orient or get grounding stub (FB-015) without actionable next steps. Voice-card work needed INS-96, INS-95, QUE-5, GLO-11 — discovered via search, not orient.
+- **Detail:** Wish: task templates — `pb orient --task ingest:episode` returns ordered checklist (PAT-8 stages, PAT-9 brief shape, PAT-10 verify gates, INS-48 glossary default) plus **voice-card addendum** when task mentions "voice" or `#voices`. Optional `recommendedGets[]` in JSON (FB-015). Reduces agents inventing Marquee/combobox when INS-95 says TestimonialDeck. Community angle: task-shaped orient = teachable workflow Randy can show in Play Room.
+- **PB response:** —
+
 ## FB-019 — pb-feedback edits stay uncommitted unless the human pushes; daily pass may miss same-day items
 - **Date:** 2026-06-27
 - **Type:** wish
@@ -28,20 +98,20 @@ Append new items to the **top**. Schema and rules in [`README.md`](./README.md).
 - **Date:** 2026-06-27
 - **Type:** idea
 - **For:** both
-- **Status:** new
+- **Status:** answered
 - **Priority:** —
-- **Context:** Built hero "…and you" → "Join the club" CTA (`AudienceJoinChip`, Motion library, DEC-29 spirit in codebase). PAT-1–5 and draft PAT-11 cover Chain queryability and design-system tokens — **nothing** checks: pointer hover grow/shrink symmetry, drag preserves visual state, `prefers-reduced-motion`, focus vs hover paths, click-after-drag suppression.
-- **Detail:** Idea: optional **PAT-12 motion-interaction** (or PAT-11 extension): e.g. "grep for `jumpToIdle` on drag", "CTA chip uses same drag wrapper as siblings", "no inline `style` resetting CSS vars Motion animates", reduced-motion instant path. Link from `pb get DEC-29` or ROL-2 when ratified. Prevents multi-hour iterate-and-fix cycles that eval would catch in one pass.
+- **Context:** Built hero "…and you" → "Join the club" CTA (`AudienceJoinChip`, Motion library, DEC-29 spirit in codebase). PAT-1–5 and PAT-11 cover Chain queryability and design-system tokens — **nothing** checked motion/drag until we added it locally.
+- **Detail:** Idea: optional **PAT-12 motion-interaction** (or PAT-11 extension). **Mitigation (FunCode, 2026-06-27):** `web/scripts/eval-hero-chips.mjs` + `npm run eval:hero-chips` — checks 30–33 (DEC-38 resolves, cluster drag wrapper, join drag-freeze, reduced-motion). Does not yet cover focus/hover symmetry or CSS-var inline reset; ratify on Chain when Randy promotes PAT-12.
 - **PB response:** —
 
 ## FB-016 — Extending a Chain-specified component (DEC-38 drag) didn't surface on `pb orient --task` for the new CTA slice
 - **Date:** 2026-06-27
 - **Type:** wish
-- **For:** agent
-- **Status:** new
+- **For:** both
+- **Status:** answered
 - **Priority:** —
-- **Context:** Hero audience chips are drag-to-place (`DEC-38`, `INS-29`). Adding CTA hover sweep to the `you` chip, the implementation branched `{#if accent}` **without** the drag wrapper — regression caught manually. Agent did not run `pb orient --task "AudienceChip CTA join hover"` or `pb get DEC-38` before building; orient for generic "design system" work (FB-015) didn't mention drag constraints on the same component.
-- **Detail:** Wish: (1) `pb orient --task` includes **constellation warnings** — "you're editing AudienceCluster; related: DEC-38 drag-to-place, INS-29 transform channels", (2) repo path hints in `.productbrain/briefing.md` → linked DEC/INS when touching `AudienceChip.svelte`, (3) `pb search "AudienceChip drag"` surfaces DEC-38 first. Feature extensions should inherit exclusions from the original bet automatically.
+- **Context:** Hero audience chips are drag-to-place (`DEC-38`, `INS-29`). Adding CTA hover sweep to the `you` chip, the implementation branched `{#if accent}` **without** the drag wrapper — regression caught manually. Agent did not run `pb get DEC-38` before building; orient for generic "design system" work (FB-015) didn't mention drag constraints on the same component.
+- **Detail:** **Split ownership:** ~80% **FunCode** — retrieve `DEC-38` before extending hero chips; don't branch CTA outside `ClusterChipDrag`; run `npm run eval:hero-chips` on hero chip PRs. ~20% **Product Brain** — orient stub (FB-015) could surface constellation warnings when editing paths mapped to DEC-38. Wish (PB): path hints in briefing, `pb search "AudienceChip drag"` ranks DEC-38. **Mitigation (FunCode):** eval checks 31–32; Chain INS linking join CTA invariants → DEC-38/INS-29.
 - **PB response:** —
 
 ## FB-015 — Governance-dense `pb orient --task` returns a grounding stub; agent must know to `pb get` each ID
@@ -58,10 +128,10 @@ Append new items to the **top**. Schema and rules in [`README.md`](./README.md).
 - **Date:** 2026-06-27
 - **Type:** idea
 - **For:** both
-- **Status:** new
+- **Status:** answered
 - **Priority:** —
-- **Context:** Fresh-agent research to validate DEC-11/STD-1/2/3 against code. PAT-1–5 cover community/Chain queryability; **zero** design-system checks (`lint:ds`, token semantics, icon stack). `pb search "design system eval PAT"` returned governance entries (DEC-11, BR-2) but no eval pattern. Agent had to invent PAT-11 and capture it.
-- **Detail:** Idea: (1) eval patterns tagged by domain (`design-system`, `deploy`, `ingest`) queryable via `pb search` or `pb orient --task`, (2) PAT-2 description could reference optional extension PATs (PAT-11 DS checks 22–29) instead of silently staying at "21 checks", (3) onboarding hint when `pb get DEC-11` — "related eval: PAT-11 (when ratified)". Prevents each workspace re-deriving the same eval ladder gaps.
+- **Context:** Fresh-agent research to validate DEC-11/STD-1/2/3 against code. PAT-1–5 cover community/Chain queryability; design-system checks now live as **PAT-11** on Chain + `npm run eval:ds` in `web/`.
+- **Detail:** Idea: (1) eval patterns tagged by domain queryable via `pb search` or `pb orient --task`, (2) PAT-2 references extension PATs, (3) onboarding hint on `pb get DEC-11`. **Resolved (FunCode):** PAT-11 exists; run `cd web && npm run eval:ds` before UI PRs (also in `.cursor/rules/design-system.mdc`). Remaining PB wish: search/orient discoverability so agents don't re-derive PAT-11.
 - **PB response:** —
 
 ## FB-013 — `pb update` on a verified standard exits non-zero when unknown fields are stripped, even if the update succeeded

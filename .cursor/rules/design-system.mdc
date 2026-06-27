@@ -39,7 +39,9 @@ Do **not** invent a one-off because you want to or assume you need it (wanting t
 Run before finishing UI work — these fail on bespoke UI:
 
 ```bash
-cd web && npm run lint   # includes the design-system guard (lint:ds)
+cd web && npm run lint          # includes the design-system guard (lint:ds)
+cd web && npm run eval:ds       # PAT-11 Tier 1 — tokens, icons, Chain IDs
+cd web && npm run eval:hero-chips   # DEC-38 — cluster drag wrapper + join CTA invariants
 ```
 
-The guard (`web/scripts/check-design-system.mjs`) blocks hardcoded hex/rgb, arbitrary themed values, inline `<svg>`, raw `<button>`, `neutral-*` palette classes, and forbidden icon imports. Tier 1 eval: `cd web && npm run eval:ds` (PAT-11). Also runs in CI.
+The guard (`web/scripts/check-design-system.mjs`) blocks hardcoded hex/rgb, arbitrary themed values, inline `<svg>`, raw `<button>`, `neutral-*` palette classes, and forbidden icon imports. Tier 1 evals: `eval:ds` (PAT-11) and `eval:hero-chips` (hero audience chips / join CTA). Run both when touching `AudienceCluster`, `AudienceJoinChip`, or hero chip motion. Also runs in CI where wired.

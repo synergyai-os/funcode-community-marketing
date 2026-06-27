@@ -14,6 +14,7 @@
 		"lint": "prettier --check . && eslint . && npm run lint:ds",
 		"lint:ds": "node scripts/check-design-system.mjs",
 		"eval:ds": "node scripts/eval-design-system-cli.mjs",
+		"eval:hero-chips": "node scripts/eval-hero-chips.mjs",
 		"format": "prettier --write .",
 		"test": "vitest run",
 		"test:watch": "vitest"
