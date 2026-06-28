@@ -5,16 +5,17 @@
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const REPO = fileURLToPath(new URL('../..', import.meta.url));
+import { REPO, readJson } from './lib/provenance.mjs';
+
 const MANIFEST = join(REPO, '.community/manifest.json');
 const MEDIA_GEN = join(REPO, 'web/src/lib/data/media/generated.ts');
 const SHOWCASE_GEN = join(REPO, 'web/src/lib/data/showcase/lenny-batch.generated.ts');
 const OUT = join(REPO, 'web/src/lib/data/community/generated.ts');
 
-function readJson(path) {
-	return JSON.parse(readFileSync(path, 'utf8'));
+if (!existsSync(MANIFEST)) {
+	console.log(`Skip community build — no .community/manifest.json; keeping committed ${OUT}`);
+	process.exit(0);
 }
 
 /** Pull episode titles/summaries for agent RAG stub (no vector DB). */
