@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { heroAudienceChips, personaBySlug, personas } from './personas';
-import {
-	displayVoices,
-	publishedVoices,
-	voiceCountsByPersona,
-	voices,
-	voicesForPersona
-} from './voices';
+import { publishedVoices, voiceCountsByPersona, voices, voicesForPersona } from './voices';
 
 describe('personas', () => {
 	it('includes product-leaders for strategic voice coverage', () => {

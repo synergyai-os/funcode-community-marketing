@@ -1,0 +1,98 @@
+{
+	"labels": [
+		{
+			"slug": "build-with-ai",
+			"name": "Build with AI",
+			"gloRef": "GLO-2",
+			"description": "Ship real things with AI — intent over prompting, Play Room mindset."
+		},
+		{
+			"slug": "mental-model",
+			"name": "Mental model",
+			"gloRef": null,
+			"description": "Old way vs FunCode way — belief shifts from ingested leader insights."
+		},
+		{
+			"slug": "onboarding",
+			"name": "Onboarding",
+			"gloRef": "FLO-1",
+			"description": "Fork, orient, open a Play Room — first shipped prototype in minutes."
+		}
+	],
+	"collections": [
+		{
+			"slug": "starter-curriculum",
+			"name": "Starter curriculum",
+			"description": "Free path from watch → read → try — GLO-9 ladder content wired for new members.",
+			"labelSlugs": ["build-with-ai", "mental-model", "onboarding"],
+			"chainRefs": ["WP-1", "GLO-9", "FLO-1", "INS-18"]
+		},
+		{
+			"slug": "leader-voices",
+			"name": "Leader voices",
+			"description": "WORD quotes and shift insights from ingested episodes — public attribution only.",
+			"labelSlugs": ["mental-model", "build-with-ai"],
+			"chainRefs": ["GLO-11", "INS-96"]
+		}
+	],
+	"shareGrants": [
+		{
+			"token": "starter-demo",
+			"collectionSlug": "starter-curriculum",
+			"title": "Starter curriculum (demo link)",
+			"audience": "link",
+			"expiresAt": "2026-12-31T23:59:59.000Z",
+			"maxViews": 100,
+			"maxActions": { "copy": 10 }
+		},
+		{
+			"token": "voices-preview",
+			"collectionSlug": "leader-voices",
+			"title": "Leader voices preview",
+			"audience": "link",
+			"expiresAt": null,
+			"maxViews": null,
+			"maxActions": null
+		}
+	],
+	"programs": [
+		{
+			"slug": "guide-fork-first-playroom",
+			"kind": "guide",
+			"tier": "free",
+			"visibility": "public",
+			"title": "Fork → orient → Play Room",
+			"tagline": "Interactive guide — your first shipped prototype in one sitting.",
+			"description": "Walk through FLO-1 with Chain-backed steps. Personalization stub uses your persona segment; full profile tailoring ships behind premium flags.",
+			"labelSlugs": ["onboarding", "build-with-ai"],
+			"chainRefs": ["FLO-1", "GLO-2", "WP-1"],
+			"duration": "45 min self-paced"
+		},
+		{
+			"slug": "cohort-build-with-ai-spring",
+			"kind": "cohort",
+			"tier": "free",
+			"visibility": "public",
+			"title": "Build with AI — Spring cohort",
+			"tagline": "Small group, same Chain, ship out loud every week.",
+			"description": "Prototype cohort entry — enrollment and live rooms deferred (no DB). Curriculum pulls starter collection + media episodes by label.",
+			"labelSlugs": ["build-with-ai", "onboarding"],
+			"chainRefs": ["WP-1", "GLO-9"],
+			"duration": "6 weeks · weekly live",
+			"schedule": { "starts": "2026-09-01", "ends": "2026-10-15" }
+		},
+		{
+			"slug": "workshop-pb-orient-live",
+			"kind": "workshop",
+			"tier": "premium",
+			"visibility": "team",
+			"title": "pb orient live workshop",
+			"tagline": "Hands-on: aim your agent before it writes a line.",
+			"description": "Premium workshop prototype — gated by feature flag until billing (TEN-2). Teaches pb orient with your repo context.",
+			"labelSlugs": ["build-with-ai", "onboarding"],
+			"chainRefs": ["FLO-1", "DEC-4"],
+			"duration": "2 hours live",
+			"schedule": { "starts": "2026-08-15", "ends": "2026-08-15" }
+		}
+	]
+}

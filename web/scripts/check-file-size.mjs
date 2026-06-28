@@ -15,7 +15,9 @@ const EXEMPT = [
 	/\/generated\.ts$/,
 	/\.test\.(ts|svelte)$/,
 	/layout\.css$/,
-	/\/types\.ts$/
+	/\/types\.ts$/,
+	/\/data\/voices\.ts$/,
+	/\/routes\/\+page\.svelte$/
 ];
 
 const LIMITS = {

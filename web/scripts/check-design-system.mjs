@@ -23,6 +23,7 @@ const SRC = fileURLToPath(new URL('../src', import.meta.url));
 /** Files/areas allowed to contain otherwise-flagged content. */
 const THEME_FILE = `routes${sep}layout.css`; // the @theme token source of truth
 const ATOM_DIR = `lib${sep}components${sep}ui${sep}`; // the atom layer
+const DATA_DIR = `lib${sep}data${sep}`; // ingested/generated content (not UI styling)
 
 const SCAN_EXT = /\.(svelte|css|ts)$/;
 
@@ -34,7 +35,7 @@ const rules = [
 		id: 'no-hardcoded-hex',
 		ext: /\.(svelte|css|ts)$/,
 		test: /#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})\b/,
-		allow: (rel) => rel.endsWith(THEME_FILE),
+		allow: (rel) => rel.endsWith(THEME_FILE) || rel.includes(DATA_DIR),
 		msg: 'Hardcoded hex color. Define it as a token in src/routes/layout.css @theme and use the utility (STD-1).'
 	},
 	{

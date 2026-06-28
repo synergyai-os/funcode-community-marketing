@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import type { Component } from 'svelte';
 	import {
 		Accordion,
@@ -7,11 +8,16 @@
 		Badge,
 		Button,
 		Card,
-		JoinClubModal,
 		TestimonialDeck
 	} from '$lib/components/ui';
 	import VoicesSection from '$lib/components/landing/VoicesSection.svelte';
+	import BeliefShiftTeaser from '$lib/components/landing/BeliefShiftTeaser.svelte';
+	import WhereWeLearnSection from '$lib/components/landing/WhereWeLearnSection.svelte';
+	import SiteHeader from '$lib/components/layout/SiteHeader.svelte';
+	import SiteFooter from '$lib/components/layout/SiteFooter.svelte';
+	import { getJoinContext } from '$lib/context/join';
 	import { heroAudienceChips } from '$lib/data/personas';
+	import { JOIN_URL, type AppRoute } from '$lib/data/learn-nav';
 	import { testimonials, published } from '$lib/data/testimonials';
 	import IconArrowRight from '~icons/lucide/arrow-right';
 	import IconPause from '~icons/lucide/pause';
@@ -36,13 +42,11 @@
 	// `import.meta.env.DEV` is compiled out of the production bundle, so they never ship.
 	const stories = import.meta.env.DEV ? testimonials : published(testimonials);
 
-	const JOIN_URL = 'https://randyhereman.com/building';
 	const PRODUCT_BRAIN_URL = 'https://productbrain.io';
 
 	type Feature = { title: string; body: string; icon: Component; id?: string };
 
-	// The three value cards. Play Room copy resolves TEN-4 (the approved
-	// playful-yet-humble exemplar from DEC-12 / STD-4).
+	// The three value cards. Play Room copy resolves TEN-4 (DEC-12 / STD-4).
 	const features: Feature[] = [
 		{
 			title: 'Build with AI',
@@ -101,26 +105,26 @@
 	];
 
 	// GLO-9 — every rung is free; you choose how far you climb.
-	type Rung = { label: string; icon: Component };
+	type Rung = { label: string; icon: Component; href: AppRoute | '#how' | typeof JOIN_URL };
 	const ladder: Rung[] = [
-		{ label: 'Watch', icon: IconEye },
-		{ label: 'Read & study', icon: IconBookOpen },
-		{ label: 'Try things', icon: IconFlaskConical },
-		{ label: 'Join the discussion', icon: IconMessagesSquare },
-		{ label: 'Start your own', icon: IconLightbulb },
-		{ label: 'Build with our tools', icon: IconWrench }
+		{ label: 'Watch', icon: IconEye, href: '/media' },
+		{ label: 'Meet in person', icon: IconMessagesSquare, href: '/meetups' },
+		{ label: 'Read & study', icon: IconBookOpen, href: '/showcase/mental-model' },
+		{ label: 'Try things', icon: IconFlaskConical, href: '/guides' },
+		{ label: 'Start your own', icon: IconLightbulb, href: '/for' },
+		{ label: 'Build with our tools', icon: IconWrench, href: '/tools' }
 	];
 
 	// AUD-1 — shared persona registry (hero, voices, /for/* pages).
 	const audience = heroAudienceChips();
+	const join = getJoinContext();
 
 	// The hero audience cluster floats on its own; this toggle gives people a way to
 	// freeze that motion (WCAG 2.2.2). Lives lower in the hero, near the CTAs.
 	let audiencePaused = $state(false);
-	let joinModalOpen = $state(false);
 
 	function openJoinModal() {
-		joinModalOpen = true;
+		join.openJoin();
 	}
 
 	// STR-7 / STR-8 / STR-9 — free is the heart; everything else is optional.
@@ -180,7 +184,6 @@
 	];
 
 	const shiftSides: Shift[] = [oldWay, funCodeWay];
-	const year = new Date().getFullYear();
 </script>
 
 <svelte:head>
@@ -194,20 +197,7 @@
 	>
 		Skip to main content
 	</a>
-	<header class="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- marketing root link -->
-		<a href="/" class="flex items-center gap-2 font-extrabold tracking-tight">
-			<span class="grid h-8 w-8 place-items-center rounded-lg bg-ink text-white">&lt;/&gt;</span>
-			<span>FunCode</span>
-		</a>
-		<nav class="hidden items-center gap-8 text-sm font-medium text-ink-soft sm:flex">
-			<a class="transition hover:text-ink" href="#how">How it works</a>
-			<a class="transition hover:text-ink" href="#playroom">Playground</a>
-			<a class="transition hover:text-ink" href="#free">Free</a>
-			<a class="transition hover:text-ink" href="#faq">FAQ</a>
-		</nav>
-		<Button href={JOIN_URL} variant="primary" size="sm">Join — free</Button>
-	</header>
+	<SiteHeader homeAnchors />
 
 	<main id="main">
 		<!-- Hero -->
@@ -402,16 +392,57 @@
 
 			<ul class="mx-auto mt-12 grid max-w-4xl gap-3 sm:grid-cols-2">
 				{#each ladder as rung, i (rung.label)}
-					<li
-						class="flex items-center gap-4 rounded-card border border-border bg-surface px-5 py-4"
-					>
-						<span class="grid size-9 place-items-center rounded-full bg-accent-soft text-accent">
-							<rung.icon class="size-5" aria-hidden="true" />
-						</span>
-						<span class="font-semibold">{rung.label}</span>
-						<span class="ml-auto text-sm font-medium text-muted">
-							{String(i + 1).padStart(2, '0')}
-						</span>
+					<li>
+						{#if rung.href === '#how'}
+							<a
+								href="#how"
+								class="flex items-center gap-4 rounded-card border border-border bg-surface px-5 py-4 transition hover:border-accent-soft hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+							>
+								<span
+									class="grid size-9 place-items-center rounded-full bg-accent-soft text-accent"
+								>
+									<rung.icon class="size-5" aria-hidden="true" />
+								</span>
+								<span class="font-semibold">{rung.label}</span>
+								<span class="ml-auto text-sm font-medium text-muted">
+									{String(i + 1).padStart(2, '0')}
+								</span>
+							</a>
+						{:else if rung.href === JOIN_URL}
+							<!-- eslint-disable svelte/no-navigation-without-resolve -- external community join -->
+							<a
+								href={JOIN_URL}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="flex items-center gap-4 rounded-card border border-border bg-surface px-5 py-4 transition hover:border-accent-soft hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+							>
+								<span
+									class="grid size-9 place-items-center rounded-full bg-accent-soft text-accent"
+								>
+									<rung.icon class="size-5" aria-hidden="true" />
+								</span>
+								<span class="font-semibold">{rung.label}</span>
+								<span class="ml-auto text-sm font-medium text-muted">
+									{String(i + 1).padStart(2, '0')}
+								</span>
+							</a>
+							<!-- eslint-enable svelte/no-navigation-without-resolve -->
+						{:else}
+							<a
+								href={resolve(rung.href)}
+								class="flex items-center gap-4 rounded-card border border-border bg-surface px-5 py-4 transition hover:border-accent-soft hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+							>
+								<span
+									class="grid size-9 place-items-center rounded-full bg-accent-soft text-accent"
+								>
+									<rung.icon class="size-5" aria-hidden="true" />
+								</span>
+								<span class="font-semibold">{rung.label}</span>
+								<span class="ml-auto text-sm font-medium text-muted">
+									{String(i + 1).padStart(2, '0')}
+								</span>
+							</a>
+						{/if}
 					</li>
 				{/each}
 			</ul>
@@ -443,7 +474,7 @@
 							</AudienceChip>
 						{:else if who.personaId}
 							<a
-								href="/for/{who.personaId}"
+								href={resolve(`/for/${who.personaId}`)}
 								class="inline-flex rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
 							>
 								<AudienceChip emoji={who.emoji} index={i} variant="neutral">
@@ -453,8 +484,15 @@
 						{/if}
 					{/each}
 				</div>
+				<p class="mt-8">
+					<Button href={resolve('/for')} variant="soft" size="sm">Browse all personas</Button>
+				</p>
 			</div>
 		</section>
+
+		<BeliefShiftTeaser />
+
+		<WhereWeLearnSection />
 
 		<VoicesSection />
 
@@ -584,19 +622,11 @@
 					We're not here to sell you a stack — we're here to help you build good products with AI:
 					for yourself, your team, or your organisation.
 				</p>
-				<Button href={JOIN_URL} variant="primary" size="lg" class="mt-8">Join — free</Button>
+				<Button variant="primary" size="lg" class="mt-8" onclick={openJoinModal}>Join — free</Button
+				>
 			</div>
 		</section>
 	</main>
 
-	<footer class="border-t border-border">
-		<div
-			class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-8 text-sm text-muted sm:flex-row"
-		>
-			<p>© {year} FunCode. Everyone can create.</p>
-			<p>Built with SvelteKit + Tailwind.</p>
-		</div>
-	</footer>
+	<SiteFooter />
 </div>
-
-<JoinClubModal bind:open={joinModalOpen} joinUrl={JOIN_URL} />

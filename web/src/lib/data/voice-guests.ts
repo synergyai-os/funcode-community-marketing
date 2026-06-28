@@ -40,6 +40,81 @@ export const VOICE_GUESTS: VoiceGuest[] = [
 		name: 'Cat Wu',
 		authority: 'Head of Product, Claude Code · Anthropic',
 		landId: 'LAND-36'
+	},
+	{
+		name: 'Evan Spiegel',
+		authority: 'Snapchat CEO',
+		landId: 'LAND-52'
+	},
+	{
+		name: 'Keith Rabois',
+		authority: 'Khosla Ventures',
+		landId: 'LAND-39'
+	},
+	{
+		name: 'Amol Avasari',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-40'
+	},
+	{
+		name: 'Simon Wilson',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-41'
+	},
+	{
+		name: 'Claire Vo',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-42'
+	},
+	{
+		name: 'Jessica Fain',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-43'
+	},
+	{
+		name: 'Jenny Wen (head of design at Claude)',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-44'
+	},
+	{
+		name: 'Qasar Younis',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-45'
+	},
+	{
+		name: "Michelle Rial (Lenny's wife)",
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-47'
+	},
+	{
+		name: 'Jacob Warwick',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-48'
+	},
+	{
+		name: 'Max Schoening (Notion)',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-49'
+	},
+	{
+		name: 'Eric Ries',
+		authority: "Lenny's Podcast guest",
+		landId: 'LAND-50'
+	},
+	{
+		name: 'Caitlin Kalinowski',
+		authority: 'ex-OpenAI, Meta, Apple',
+		landId: 'LAND-51'
+	},
+	{
+		name: 'Nikhyl Singhal',
+		authority: 'Meta, Google',
+		landId: 'LAND-37'
+	},
+	{
+		name: 'Andrew Ambrosino',
+		authority: 'OpenAI Codex app lead',
+		landId: 'LAND-53'
 	}
 ];
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { Badge, Button } from '$lib/components/ui';
+	import { Button } from '$lib/components/ui';
+	import PageHeader from '$lib/components/layout/PageHeader.svelte';
 	import SiteFooter from '$lib/components/layout/SiteFooter.svelte';
 	import SiteHeader from '$lib/components/layout/SiteHeader.svelte';
 	import TimelineChapterScroll from '$lib/components/timeline/TimelineChapterScroll.svelte';
@@ -21,25 +22,27 @@
 
 <div class="min-h-screen bg-surface text-ink">
 	<SiteHeader />
+	<PageHeader
+		backHref="/media"
+		backLabel="Sources"
+		eyebrow="Landscape"
+		title="AI landscape timeline"
+	/>
 
-	<header class="border-b border-border bg-surface-muted">
-		<div class="mx-auto max-w-4xl px-6 py-14">
-			<Badge variant="accent">Strategic engine</Badge>
-			<h1 class="mt-4 text-4xl font-black tracking-tight text-balance">AI landscape timeline</h1>
-			<p class="mt-3 max-w-2xl text-pretty text-ink-soft">
-				Scroll through the story year by year — beliefs and predictions anchored to
-				<strong>when they were said</strong>, not when we ingested them.
+	<div class="mx-auto max-w-4xl px-6 pb-4">
+		<p class="max-w-2xl text-pretty text-ink-soft">
+			Scroll through the story year by year — beliefs and predictions anchored to
+			<strong>when they were said</strong>, not when we ingested them.
+		</p>
+		{#if stats.yearSpan}
+			<p class="mt-2 text-sm text-ink-soft">
+				{sliceEvents.length} moments in this slice · {stats.predictionCount} predictions total ·
+				{stats.openPredictions} open · {stats.resolvedTrue} confirmed true
 			</p>
-			{#if stats.yearSpan}
-				<p class="mt-2 text-sm text-ink-soft">
-					{sliceEvents.length} moments in this slice · {stats.predictionCount} predictions total ·
-					{stats.openPredictions} open · {stats.resolvedTrue} confirmed true
-				</p>
-			{/if}
-		</div>
-	</header>
+		{/if}
+	</div>
 
-	<main class="mx-auto max-w-4xl px-6 pb-16">
+	<main class="mx-auto max-w-4xl px-6 pb-16 pt-6">
 		<TimelineChapterScroll />
 
 		<section class="mt-16 grid gap-8 border-t border-border pt-12 md:grid-cols-2">

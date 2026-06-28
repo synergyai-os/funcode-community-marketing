@@ -40,7 +40,7 @@ try {
 // 31 — cluster chips always go through ClusterChipDrag (no bare CTA path)
 const clusterSrc = readUi('AudienceCluster.svelte');
 const clusterOk =
-	!clusterSrc.includes("import AudienceChip") &&
+	!clusterSrc.includes('import AudienceChip') &&
 	clusterSrc.includes('ClusterChipDrag') &&
 	!/<AudienceChip\b/.test(clusterSrc);
 checks.push({
@@ -53,9 +53,7 @@ checks.push({
 
 // 32 — join CTA freezes on drag instead of jumping to idle ($effect path only)
 const joinSrc = readUi('AudienceJoinChip.svelte');
-const dragEffectMatch = joinSrc.match(
-	/\$effect\s*\(\s*\(\)\s*=>\s*\{([\s\S]*?)\n\t\}\);/
-);
+const dragEffectMatch = joinSrc.match(/\$effect\s*\(\s*\(\)\s*=>\s*\{([\s\S]*?)\n\t\}\);/);
 const dragEffectBody = dragEffectMatch?.[1] ?? '';
 const dragEffectFreezes =
 	/if\s*\(\s*dragging\s*\)[\s\S]*?freezeForDrag\s*\(\s*\)/.test(dragEffectBody) &&

@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { Button, Badge } from '$lib/components/ui';
+	import SiteFooter from '$lib/components/layout/SiteFooter.svelte';
+	import SiteHeader from '$lib/components/layout/SiteHeader.svelte';
 	import VoicesSection from '$lib/components/landing/VoicesSection.svelte';
+	import PersonaInsightsSection from '$lib/components/landing/PersonaInsightsSection.svelte';
+	import PersonaTimelineTeaser from '$lib/components/timeline/PersonaTimelineTeaser.svelte';
 	import { contentForPersona } from '$lib/data/persona-content';
 	import { personaById, type Persona } from '$lib/data/personas';
 	import { displayVoices, voicesForPersona } from '$lib/data/voices';
+	import { JOIN_URL } from '$lib/data/learn-nav';
 
 	type Props = {
 		data: { persona: Persona };
@@ -13,8 +18,6 @@
 	const persona = $derived(data.persona);
 	const highlights = $derived(contentForPersona(persona.id).highlights);
 	const voiceCount = $derived(voicesForPersona(persona.id, displayVoices()).length);
-
-	const JOIN_URL = 'https://randyhereman.com/building';
 </script>
 
 <svelte:head>
@@ -22,13 +25,7 @@
 </svelte:head>
 
 <div class="min-h-screen bg-white text-ink">
-	<header class="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-		<a href="/" class="flex items-center gap-2 font-extrabold tracking-tight">
-			<span class="grid h-8 w-8 place-items-center rounded-lg bg-ink text-white">&lt;/&gt;</span>
-			<span>FunCode</span>
-		</a>
-		<Button href={JOIN_URL} variant="primary" size="sm">Join — free</Button>
-	</header>
+	<SiteHeader />
 
 	<main>
 		<section class="border-b border-border bg-surface-muted">
@@ -65,6 +62,10 @@
 			</ul>
 		</section>
 
+		<PersonaInsightsSection personaId={persona.id} />
+
+		<PersonaTimelineTeaser personaId={persona.id} />
+
 		<VoicesSection lockedPersonaId={persona.id} />
 
 		<section class="mx-auto max-w-2xl px-6 py-16 text-center">
@@ -77,4 +78,6 @@
 			</div>
 		</section>
 	</main>
+
+	<SiteFooter />
 </div>

@@ -95,7 +95,10 @@ try {
 
 // 27 — DS-scoped eslint (ui atoms + guard script)
 try {
-	run('npx eslint src/lib/components/ui scripts/check-design-system.mjs scripts/eval-design-system-cli.mjs', WEB);
+	run(
+		'npx eslint src/lib/components/ui scripts/check-design-system.mjs scripts/eval-design-system-cli.mjs',
+		WEB
+	);
 	checks.push({
 		id: '27-eslint-ds',
 		pass: true,

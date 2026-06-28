@@ -8,9 +8,20 @@
 		open?: boolean;
 		/** Where to send people after a successful capture (optional deep-link). */
 		joinUrl?: string;
+		/** Stay on site — store email locally, no external redirect. */
+		captureOnly?: boolean;
+		/** Why the modal opened — e.g. host-meetup, rsvp. */
+		intent?: string;
+		onCaptured?: (email: string) => void;
 	};
 
-	let { open = $bindable(false), joinUrl = 'https://randyhereman.com/building' }: Props = $props();
+	let {
+		open = $bindable(false),
+		joinUrl = 'https://randyhereman.com/building',
+		captureOnly = false,
+		intent,
+		onCaptured
+	}: Props = $props();
 
 	let email = $state('');
 	let submitted = $state(false);
@@ -52,14 +63,29 @@
 			error = 'Pop in a real email so we know where to reach you.';
 			return;
 		}
+		onCaptured?.(trimmed);
 		submitted = true;
 	}
 
 	function finishJoin() {
+		if (captureOnly) {
+			close();
+			return;
+		}
 		const url = new URL(joinUrl);
 		url.searchParams.set('email', email.trim());
 		window.location.href = url.toString();
 	}
+
+	const intentCopy = $derived.by(() => {
+		if (intent === 'host-meetup') {
+			return 'Join free first — then we’ll help you publish your meetup slot here.';
+		}
+		if (intent === 'rsvp') {
+			return 'Leave your email to RSVP — free forever, no paywall.';
+		}
+		return "Join product people who'd rather ship a prototype than write another PRD. AI does the heavy lifting — you steer.";
+	});
 </script>
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -- external community signup -->
@@ -83,17 +109,29 @@
 			<div class="relative text-center">
 				<Badge variant="accent" dot class="shadow-card">You're in</Badge>
 				<h2 id="join-modal-title" class="mt-6 text-3xl font-black tracking-tight text-balance">
-					Almost there — one tap left.
+					{#if captureOnly}
+						Thanks — we saved your email.
+					{:else}
+						Almost there — one tap left.
+					{/if}
 				</h2>
 				<p class="mt-4 text-lg text-pretty text-ink-soft">
-					We'll take you to finish joining the club. Free forever — no paywall to belong.
+					{#if captureOnly}
+						You're on the list. We'll reach out about next steps — free forever, no paywall.
+					{:else}
+						We'll take you to finish joining the club. Free forever — no paywall to belong.
+					{/if}
 				</p>
-				<Button variant="primary" size="lg" class="mt-8 w-full" onclick={finishJoin}>
-					Finish joining
-					{#snippet trailing()}
-						<IconArrowRight class="size-5" aria-hidden="true" />
-					{/snippet}
-				</Button>
+				{#if captureOnly}
+					<Button variant="primary" size="lg" class="mt-8 w-full" onclick={finishJoin}>Done</Button>
+				{:else}
+					<Button variant="primary" size="lg" class="mt-8 w-full" onclick={finishJoin}>
+						Finish joining
+						{#snippet trailing()}
+							<IconArrowRight class="size-5" aria-hidden="true" />
+						{/snippet}
+					</Button>
+				{/if}
 			</div>
 		{:else}
 			<div class="relative text-center">
@@ -107,8 +145,7 @@
 					Come build with us.
 				</h2>
 				<p class="mt-4 text-lg text-pretty text-ink-soft">
-					Join product people who'd rather ship a prototype than write another PRD. AI does the
-					heavy lifting — you steer.
+					{intentCopy}
 				</p>
 			</div>
 

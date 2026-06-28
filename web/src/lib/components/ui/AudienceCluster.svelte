@@ -159,8 +159,11 @@
 		const dx = event.clientX - s.startX;
 		const dy = event.clientY - s.startY;
 		// Some mobile browsers report (0,0) on pointercancel/up after scroll steals the gesture.
-		const coordsTrusted =
-			!(event.clientX === 0 && event.clientY === 0 && Math.hypot(dx, dy) > DRAG_CLICK_THRESHOLD);
+		const coordsTrusted = !(
+			event.clientX === 0 &&
+			event.clientY === 0 &&
+			Math.hypot(dx, dy) > DRAG_CLICK_THRESHOLD
+		);
 		const x = coordsTrusted ? s.baseX + dx : s.baseX;
 		const y = coordsTrusted ? s.baseY + dy : s.baseY;
 		endDrag(gi, event);
