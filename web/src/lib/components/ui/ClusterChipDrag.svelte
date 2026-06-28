@@ -14,6 +14,7 @@
 		onJoin?: () => void;
 		dragging: boolean;
 		suppressClick: boolean;
+		touchDragging?: boolean;
 		poseTransform?: string;
 		settling?: boolean;
 		isActive?: boolean;
@@ -21,6 +22,7 @@
 		onPointerDown: (index: number, event: PointerEvent) => void;
 		onPointerMove: (index: number, event: PointerEvent) => void;
 		onPointerUp: (index: number, event: PointerEvent) => void;
+		onPointerCancel: (index: number, event: PointerEvent) => void;
 	};
 
 	let {
@@ -34,13 +36,15 @@
 		onJoin,
 		dragging,
 		suppressClick,
+		touchDragging = false,
 		poseTransform,
 		settling = false,
 		isActive = false,
 		surfaceClass,
 		onPointerDown,
 		onPointerMove,
-		onPointerUp
+		onPointerUp,
+		onPointerCancel
 	}: Props = $props();
 </script>
 
@@ -49,11 +53,12 @@
 	class={surfaceClass}
 	class:is-active={isActive}
 	class:is-settling={settling}
+	class:is-touch-dragging={touchDragging}
 	style:transform={poseTransform}
 	onpointerdown={(e) => onPointerDown(chipIndex, e)}
 	onpointermove={(e) => onPointerMove(chipIndex, e)}
 	onpointerup={(e) => onPointerUp(chipIndex, e)}
-	onpointercancel={(e) => onPointerUp(chipIndex, e)}
+	onpointercancel={(e) => onPointerCancel(chipIndex, e)}
 >
 	<AudienceChip
 		{emoji}

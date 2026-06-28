@@ -45,7 +45,20 @@
 	let hoverAnim: AnimationPlaybackControls | null = null;
 	let cachedIdleW = 0;
 	let cachedExpandedW = 0;
+	const HOLD_MS = 320;
+	const HOLD_MOVE_THRESHOLD = 10;
+
+	let holdTimer: ReturnType<typeof setTimeout> | null = null;
+	let touchStartX = 0;
+	let touchStartY = 0;
 	let dragFrozen = false;
+
+	function clearHoldTimer() {
+		if (holdTimer) {
+			clearTimeout(holdTimer);
+			holdTimer = null;
+		}
+	}
 
 	const showSweepBg = $derived(animating || primed);
 
@@ -54,13 +67,14 @@
 			? `${JOIN_CHIP_LABEL} — activate to open`
 			: animating
 				? `${JOIN_CHIP_LABEL} — hold to complete`
-				: '…and you — hover, press Enter, or tap twice to join'
+				: '…and you — hold, tap twice, or press Enter to join'
 	);
 
 	const liveStatus = $derived(primed ? JOIN_CHIP_LABEL : animating ? 'Opening join…' : '');
 
 	$effect(() => {
 		if (dragging) {
+			clearHoldTimer();
 			freezeForDrag();
 			return;
 		}
@@ -302,6 +316,39 @@
 		if (!primed) growTowardPrimed();
 	}
 
+	function onTouchPointerDown(event: PointerEvent) {
+		if (event.pointerType !== 'touch' || dragging || dragFrozen) return;
+		touchStartX = event.clientX;
+		touchStartY = event.clientY;
+		clearHoldTimer();
+		holdTimer = setTimeout(() => {
+			holdTimer = null;
+			if (!dragging && !dragFrozen) {
+				pointerInside = true;
+				growTowardPrimed();
+			}
+		}, HOLD_MS);
+	}
+
+	function onTouchPointerMove(event: PointerEvent) {
+		if (event.pointerType !== 'touch' || !holdTimer) return;
+		if (
+			Math.hypot(event.clientX - touchStartX, event.clientY - touchStartY) > HOLD_MOVE_THRESHOLD
+		) {
+			clearHoldTimer();
+		}
+	}
+
+	function onTouchPointerUp(event: PointerEvent) {
+		if (event.pointerType !== 'touch') return;
+		clearHoldTimer();
+		if (dragging || dragFrozen) return;
+		if (!primed && animating) {
+			pointerInside = false;
+			shrinkTowardIdle();
+		}
+	}
+
 	function onPointerLeave() {
 		if (dragging || dragFrozen) return;
 		pointerInside = false;
@@ -323,10 +370,14 @@
 
 <span
 	bind:this={el}
-	class={`audience-join-chip inline-grid overflow-hidden rounded-full border border-accent-soft bg-accent-soft text-sm font-semibold tracking-wide text-accent-strong uppercase shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-card ${showSweepBg ? 'audience-join-chip--active' : ''} ${primed ? 'audience-join-chip--primed' : ''} ${className}`}
+	class={`audience-join-chip inline-grid overflow-hidden rounded-full border border-accent-soft bg-accent-soft text-sm font-semibold tracking-wide text-accent-strong uppercase shadow-sm backdrop-blur transition-shadow duration-300 ${showSweepBg ? 'audience-join-chip--active' : ''} ${primed ? 'audience-join-chip--primed' : ''} ${className}`}
 	role="button"
 	tabindex="0"
 	aria-label={ariaLabel}
+	onpointerdown={onTouchPointerDown}
+	onpointermove={onTouchPointerMove}
+	onpointerup={onTouchPointerUp}
+	onpointercancel={onTouchPointerUp}
 	onpointerenter={onPointerEnter}
 	onpointerleave={onPointerLeave}
 	onblur={onBlur}
@@ -369,9 +420,16 @@
 		position: relative;
 		width: fit-content;
 		cursor: pointer;
+		touch-action: manipulation;
 		--sweep: 0%;
 		--emoji-slot: 1.125rem;
 		--emoji-opacity: 1;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.audience-join-chip:hover {
+			box-shadow: var(--shadow-card);
+		}
 	}
 
 	.audience-join-chip__measure {

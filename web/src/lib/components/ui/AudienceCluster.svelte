@@ -61,19 +61,60 @@
 	// above the headline/subhead so the drop is always respected.
 	let poses = $state<Record<number, Pose>>({});
 	// In-flight drag: pointer origin + the offset the chip started this grab from.
-	const drag: Record<number, { startX: number; startY: number; baseX: number; baseY: number }> = {};
+	const drag: Record<
+		number,
+		{ startX: number; startY: number; baseX: number; baseY: number; hadPose: boolean }
+	> = {};
 	const DRAG_CLICK_THRESHOLD = 6;
 	let dragMoved = $state<Record<number, boolean>>({});
+	/** True once the finger moves past the click threshold — enables touch-action:none. */
+	let dragActive = $state<Record<number, boolean>>({});
 
 	function poseStyle(p: Pose | undefined): string | undefined {
 		return p ? `translate(${p.x}px, ${p.y}px) scale(${p.scale}) rotate(${p.rot}deg)` : undefined;
 	}
 
+	function releasePointer(el: HTMLElement, pointerId: number) {
+		if (el.hasPointerCapture(pointerId)) {
+			try {
+				el.releasePointerCapture(pointerId);
+			} catch {
+				/* capture may already be released on cancel */
+			}
+		}
+	}
+
+	function revertDragPose(gi: number) {
+		const s = drag[gi];
+		if (!s) return;
+		if (s.hadPose) {
+			poses[gi] = { x: s.baseX, y: s.baseY, scale: 1, rot: 0, settling: !reducedMotion };
+		} else {
+			delete poses[gi];
+		}
+	}
+
+	function endDrag(gi: number, event: PointerEvent) {
+		delete drag[gi];
+		dragMoved[gi] = false;
+		dragActive[gi] = false;
+		releasePointer(event.currentTarget as HTMLElement, event.pointerId);
+		if (activeIndex === gi) activeIndex = -1;
+	}
+
 	function onPointerDown(gi: number, event: PointerEvent) {
 		if (!canAnimate) return;
-		const base = poses[gi] ?? { x: 0, y: 0 };
-		drag[gi] = { startX: event.clientX, startY: event.clientY, baseX: base.x, baseY: base.y };
+		const existing = poses[gi];
+		const base = existing ?? { x: 0, y: 0 };
+		drag[gi] = {
+			startX: event.clientX,
+			startY: event.clientY,
+			baseX: base.x,
+			baseY: base.y,
+			hadPose: existing !== undefined
+		};
 		dragMoved[gi] = false;
+		dragActive[gi] = false;
 		activeIndex = gi;
 		// Lift instantly (no settle transition) so the chip tracks the pointer 1:1.
 		poses[gi] = { x: base.x, y: base.y, scale: 1.08, rot: 0, settling: false };
@@ -91,7 +132,11 @@
 		if (!s) return;
 		const dx = event.clientX - s.startX;
 		const dy = event.clientY - s.startY;
-		if (Math.hypot(dx, dy) > DRAG_CLICK_THRESHOLD) dragMoved[gi] = true;
+		if (!dragMoved[gi] && Math.hypot(dx, dy) > DRAG_CLICK_THRESHOLD) {
+			dragMoved[gi] = true;
+			dragActive[gi] = true;
+		}
+		if (!dragMoved[gi]) return;
 		poses[gi] = {
 			x: s.baseX + dx,
 			y: s.baseY + dy,
@@ -104,14 +149,29 @@
 	function onPointerUp(gi: number, event: PointerEvent) {
 		const s = drag[gi];
 		if (!s) return;
-		const x = s.baseX + (event.clientX - s.startX);
-		const y = s.baseY + (event.clientY - s.startY);
-		delete drag[gi];
-		const el = event.currentTarget as HTMLElement;
-		if (el.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
+
+		if (!dragMoved[gi]) {
+			revertDragPose(gi);
+			endDrag(gi, event);
+			return;
+		}
+
+		const dx = event.clientX - s.startX;
+		const dy = event.clientY - s.startY;
+		// Some mobile browsers report (0,0) on pointercancel/up after scroll steals the gesture.
+		const coordsTrusted =
+			!(event.clientX === 0 && event.clientY === 0 && Math.hypot(dx, dy) > DRAG_CLICK_THRESHOLD);
+		const x = coordsTrusted ? s.baseX + dx : s.baseX;
+		const y = coordsTrusted ? s.baseY + dy : s.baseY;
+		endDrag(gi, event);
 		// Stay where dropped; relax the lift (scale/tilt) with a gentle CSS settle.
 		poses[gi] = { x, y, scale: 1, rot: 0, settling: !reducedMotion };
-		if (activeIndex === gi) activeIndex = -1;
+	}
+
+	function onPointerCancel(gi: number, event: PointerEvent) {
+		if (!drag[gi]) return;
+		revertDragPose(gi);
+		endDrag(gi, event);
 	}
 
 	// ── ROWS variant — two playful lines, in normal flow ────────────────────────
@@ -221,6 +281,7 @@
 						{onJoin}
 						dragging={activeIndex === i}
 						suppressClick={!!dragMoved[i]}
+						touchDragging={!!dragActive[i]}
 						poseTransform={poseStyle(poses[i])}
 						settling={poses[i]?.settling}
 						isActive={activeIndex === i}
@@ -228,6 +289,7 @@
 						{onPointerDown}
 						{onPointerMove}
 						{onPointerUp}
+						{onPointerCancel}
 					/>
 				</div>
 			</div>
@@ -259,12 +321,14 @@
 							{onJoin}
 							dragging={activeIndex === gi}
 							suppressClick={!!dragMoved[gi]}
+							touchDragging={!!dragActive[gi]}
 							poseTransform={poseStyle(poses[gi])}
 							settling={poses[gi]?.settling}
 							surfaceClass="cluster__drag"
 							{onPointerDown}
 							{onPointerMove}
 							{onPointerUp}
+							{onPointerCancel}
 						/>
 					</div>
 				{/each}
@@ -298,7 +362,15 @@
 		pointer-events: auto;
 		cursor: grab;
 		touch-action: pan-y;
+		user-select: none;
+		-webkit-user-select: none;
 		will-change: transform;
+	}
+
+	/* Once a drag starts, claim the gesture so the chip tracks the finger 1:1. */
+	.scatter__drag.is-touch-dragging,
+	.cluster__drag.is-touch-dragging {
+		touch-action: none;
 	}
 
 	.scatter__drag:active,

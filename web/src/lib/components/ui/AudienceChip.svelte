@@ -74,7 +74,7 @@
 {:else}
 	<span
 		bind:this={el}
-		class={`audience-chip group inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-semibold tracking-wide uppercase shadow-sm backdrop-blur transition-shadow duration-300 hover:shadow-card ${variants[variant]} ${className}`}
+		class={`audience-chip group inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-semibold tracking-wide uppercase shadow-sm backdrop-blur transition-shadow duration-300 ${variants[variant]} ${className}`}
 		class:audience-chip--reverse={driftReversed}
 		style={`--drift-dur:${driftDuration}s;--drift-delay:${driftDelay}s;--drift-amp:${amplitude}${paused ? ';animation-play-state:paused' : ''}`}
 		onpointerleave={release}
@@ -83,7 +83,7 @@
 		{...rest}
 	>
 		<span
-			class="audience-chip__emoji text-lg leading-none transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-150 motion-reduce:transition-none"
+			class="audience-chip__emoji text-lg leading-none motion-reduce:transition-none"
 			aria-hidden="true">{emoji}</span
 		>
 		{@render children()}
@@ -100,8 +100,20 @@
 		animation-direction: reverse;
 	}
 
-	.audience-chip:hover {
-		animation-play-state: paused;
+	@media (hover: hover) and (pointer: fine) {
+		.audience-chip:hover {
+			animation-play-state: paused;
+			box-shadow: var(--shadow-card);
+		}
+
+		.audience-chip:hover .audience-chip__emoji {
+			transform: rotate(-12deg) scale(1.5);
+			transition: transform 300ms;
+		}
+	}
+
+	.audience-chip__emoji {
+		transition: transform 300ms;
 	}
 
 	@keyframes audience-drift {
