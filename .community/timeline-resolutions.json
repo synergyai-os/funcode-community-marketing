@@ -1,0 +1,52 @@
+{
+	"resolutions": [
+		{
+			"matchTitleContains": "Micron Will Be More Valuable Than Meta",
+			"status": "open",
+			"horizon": "2027",
+			"topic": "infrastructure",
+			"resolutionNotes": "Track memory/chip valuations vs Meta market cap — human ratified open fork.",
+			"resolvedAt": null
+		},
+		{
+			"matchTitleContains": "Power Infrastructure Is The Persistent Bottleneck",
+			"status": "partial",
+			"horizon": "ongoing",
+			"topic": "infrastructure",
+			"resolutionNotes": "Data-center power constraints widely confirmed 2024–2026; permits still lagging.",
+			"resolvedAt": "2025-06-01T00:00:00.000Z"
+		},
+		{
+			"matchTitleContains": "Orchestration Beats Model Building",
+			"status": "partial",
+			"horizon": "2025-2026",
+			"topic": "orchestration",
+			"resolutionNotes": "Major labs shipping agent harnesses + tool routing; model-only positioning fading.",
+			"resolvedAt": "2025-09-01T00:00:00.000Z"
+		},
+		{
+			"matchTitleContains": "The model is no longer the product",
+			"status": "true",
+			"horizon": "2025",
+			"topic": "orchestration",
+			"resolutionNotes": "Industry shift to agents/computer-use products validates thesis.",
+			"resolvedAt": "2025-03-01T00:00:00.000Z"
+		},
+		{
+			"matchTitleContains": "PR → PROD",
+			"status": "true",
+			"horizon": "2020-2024",
+			"topic": "delivery-culture",
+			"resolutionNotes": "FunCode teaches against this gate mindset (STR-2) — widely observed in enterprise.",
+			"resolvedAt": "2024-01-01T00:00:00.000Z"
+		}
+	],
+	"topicLabels": {
+		"infrastructure": "Power & chips",
+		"orchestration": "Orchestration vs models",
+		"agents": "Agents & automation",
+		"delivery-culture": "Shipping culture",
+		"china": "China & export controls",
+		"pricing": "AI economics"
+	}
+}

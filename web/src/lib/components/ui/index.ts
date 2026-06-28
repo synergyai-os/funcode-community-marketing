@@ -11,4 +11,8 @@ export { default as Testimonial } from './Testimonial.svelte';
 export { default as TestimonialDeck } from './TestimonialDeck.svelte';
 export { default as JoinClubModal } from './JoinClubModal.svelte';
 export { default as Marquee } from './Marquee.svelte';
+export { default as PredictionBadge } from './PredictionBadge.svelte';
+export { default as StickyYearNav } from './StickyYearNav.svelte';
+export { default as ChapterHeader } from './ChapterHeader.svelte';
+export { default as TimelineCard } from './TimelineCard.svelte';
 export type { MarqueeSpeed } from './Marquee.svelte';
