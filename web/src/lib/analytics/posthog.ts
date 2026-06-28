@@ -39,8 +39,8 @@ export async function initPostHog(): Promise<void> {
 		person_profiles: 'identified_only',
 		capture_pageview: true,
 		capture_pageleave: true,
-		loaded: (ph) => {
-			client = ph as PostHogClient;
+		loaded: (ph: PostHogClient) => {
+			client = ph;
 			ready = true;
 			readyResolve?.();
 		}

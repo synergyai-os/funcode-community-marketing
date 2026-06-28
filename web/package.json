@@ -55,6 +55,7 @@
 		"vitest": "^4.1.9"
 	},
 	"dependencies": {
-		"motion": "^12.42.0"
+		"motion": "^12.42.0",
+		"posthog-js": "^1.395.0"
 	}
 }
