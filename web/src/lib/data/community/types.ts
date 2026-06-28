@@ -1,11 +1,5 @@
 export type ProgramKind =
-	| 'event'
-	| 'meetup'
-	| 'cohort'
-	| 'workshop'
-	| 'private_session'
-	| 'training'
-	| 'guide';
+	'event' | 'meetup' | 'cohort' | 'workshop' | 'private_session' | 'training' | 'guide';
 
 export type ProgramTier = 'free' | 'premium';
 export type ProgramVisibility = 'public' | 'team' | 'org' | 'private';

@@ -5,10 +5,7 @@
 import { getPostHogFlag } from './posthog';
 
 export type FeatureFlag =
-	| 'premium-ai-chat'
-	| 'premium-ai-voice'
-	| 'premium-programs'
-	| 'premium-sharing';
+	'premium-ai-chat' | 'premium-ai-voice' | 'premium-programs' | 'premium-sharing';
 
 const ENV_KEYS: Record<FeatureFlag, string> = {
 	'premium-ai-chat': 'PUBLIC_FF_AI_CHAT',
