@@ -3,13 +3,14 @@
  * Build media + tool quote data from .ingest/jobs (committed or draft_ready).
  * Run: node web/scripts/build-media-data.mjs
  */
-import { existsSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
 	JOBS,
 	REPO,
 	loadUploadCache,
 	readJson,
+	readdirSafe,
 	sourcePublishedAtFromCache
 } from './lib/provenance.mjs';
 
@@ -36,7 +37,7 @@ const uploadCache = loadUploadCache();
 const episodes = [];
 const toolQuotes = new Map();
 
-for (const jobId of readdirSync(JOBS)) {
+for (const jobId of readdirSafe(JOBS)) {
 	const job = join(JOBS, jobId);
 	const metaPath = join(job, 'meta.json');
 	const draftPath = join(job, 'extraction-draft.json');
