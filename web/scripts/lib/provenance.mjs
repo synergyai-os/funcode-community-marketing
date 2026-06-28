@@ -24,6 +24,11 @@ export function readdirSafe(dir) {
 	}
 }
 
+/** True when `.ingest/jobs` exists and has at least one job folder. */
+export function ingestJobsAvailable() {
+	return existsSync(JOBS) && readdirSafe(JOBS).length > 0;
+}
+
 export function loadUploadCache() {
 	if (!existsSync(UPLOAD_CACHE)) return {};
 	try {

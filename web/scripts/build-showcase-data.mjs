@@ -8,12 +8,18 @@ import { join } from 'node:path';
 import {
 	JOBS,
 	REPO,
+	ingestJobsAvailable,
 	loadUploadCache,
 	readJson,
 	sourcePublishedAtFromCache
 } from './lib/provenance.mjs';
 
 const OUT = join(REPO, 'web/src/lib/data/showcase/lenny-batch.generated.ts');
+
+if (!ingestJobsAvailable()) {
+	console.log(`Skip showcase build — no .ingest/jobs; keeping committed ${OUT}`);
+	process.exit(0);
+}
 
 /** Lenny bulk batch — keep in sync with .ingest/lenny-batch-13.txt */
 const VIDEO_IDS = [

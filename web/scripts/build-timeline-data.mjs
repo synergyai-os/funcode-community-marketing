@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import {
 	JOBS,
 	REPO,
+	ingestJobsAvailable,
 	loadUploadCache,
 	readJson,
 	readdirSafe,
@@ -17,6 +18,11 @@ import {
 
 const RESOLUTIONS = join(REPO, '.community/timeline-resolutions.json');
 const OUT = join(REPO, 'web/src/lib/data/timeline/generated.ts');
+
+if (!ingestJobsAvailable()) {
+	console.log(`Skip timeline build — no .ingest/jobs; keeping committed ${OUT}`);
+	process.exit(0);
+}
 
 const SLOT_PERSONAS = {
 	'shift-new': ['founders', 'product-leaders', 'product-managers'],

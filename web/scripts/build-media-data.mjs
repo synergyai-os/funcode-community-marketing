@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import {
 	JOBS,
 	REPO,
+	ingestJobsAvailable,
 	loadUploadCache,
 	readJson,
 	readdirSafe,
@@ -15,6 +16,11 @@ import {
 } from './lib/provenance.mjs';
 
 const OUT = join(REPO, 'web/src/lib/data/media/generated.ts');
+
+if (!ingestJobsAvailable()) {
+	console.log(`Skip media build — no .ingest/jobs; keeping committed ${OUT}`);
+	process.exit(0);
+}
 
 const TOOL_ALIASES = [
 	{ slug: 'cursor', aliases: ['cursor'] },
