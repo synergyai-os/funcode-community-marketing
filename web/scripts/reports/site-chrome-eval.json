@@ -1,0 +1,130 @@
+{
+  "spec": "PAT-13",
+  "tier": 1,
+  "passed": 24,
+  "total": 24,
+  "pass": true,
+  "checks": [
+    {
+      "id": "01-whoami-funcode",
+      "pass": true,
+      "detail": "pb whoami → workspace FunCode"
+    },
+    {
+      "id": "02-std-11",
+      "pass": true,
+      "detail": "pb get STD-11 resolves"
+    },
+    {
+      "id": "03-pat-13",
+      "pass": true,
+      "detail": "pb get PAT-13 resolves"
+    },
+    {
+      "id": "04-site-nav",
+      "pass": true,
+      "detail": "src/lib/data/site-nav.ts exists"
+    },
+    {
+      "id": "05-nav-pillar",
+      "pass": true,
+      "detail": "src/lib/components/ui/NavPillar.svelte exists"
+    },
+    {
+      "id": "06-site-menu",
+      "pass": true,
+      "detail": "src/lib/components/ui/SiteMenu.svelte exists"
+    },
+    {
+      "id": "07-site-chrome",
+      "pass": true,
+      "detail": "src/lib/components/ui/SiteChrome.svelte exists"
+    },
+    {
+      "id": "08-dev-route",
+      "pass": true,
+      "detail": "src/routes/dev/site-chrome/+page.svelte exists"
+    },
+    {
+      "id": "09-site-nav-groups",
+      "pass": true,
+      "detail": "siteNav has do, explore, community groups"
+    },
+    {
+      "id": "10-pillar-flat-rows",
+      "pass": true,
+      "detail": "NavPillar flat rows: no per-item border/shadow card chrome"
+    },
+    {
+      "id": "11-pillar-icon-dividers",
+      "pass": true,
+      "detail": "NavPillar accent icon tile + NavGroup divide-y separators"
+    },
+    {
+      "id": "12-motion-import",
+      "pass": true,
+      "detail": "SiteMenu imports motion animate + stagger"
+    },
+    {
+      "id": "13-reduced-motion",
+      "pass": true,
+      "detail": "SiteMenu respects prefers-reduced-motion"
+    },
+    {
+      "id": "14-no-white-bar-only",
+      "pass": true,
+      "detail": "SiteChrome avoids generic bg-surface/95+border-b-only; uses warm gradient/floating bar"
+    },
+    {
+      "id": "15-backdrop-recipe",
+      "pass": true,
+      "detail": "SiteMenu backdrop uses ink 55% color-mix + blur"
+    },
+    {
+      "id": "16-ui-exports",
+      "pass": true,
+      "detail": "ui/index.ts exports NavPillar, SiteMenu, SiteChrome"
+    },
+    {
+      "id": "17-site-header-wired",
+      "pass": true,
+      "detail": "SiteHeader.svelte wraps SiteChrome; old learn-nav flat header removed"
+    },
+    {
+      "id": "18-dev-mounts-chrome",
+      "pass": true,
+      "detail": "dev/site-chrome imports and mounts SiteChrome, not SiteHeader"
+    },
+    {
+      "id": "21-desktop-hover-open",
+      "pass": true,
+      "detail": "SiteChrome desktop nav: hover-open on .nav-group, no click toggleGroup"
+    },
+    {
+      "id": "22-nav-text-triggers",
+      "pass": true,
+      "detail": "Nav triggers: shared text-link nav-item class (not soft/button pills), chevron + aria-haspopup"
+    },
+    {
+      "id": "23-dropdown-anchor-parent",
+      "pass": true,
+      "detail": "SiteMenu dropdownAnchor=parent for gap-bridge positioning"
+    },
+    {
+      "id": "24-join-cta-primary",
+      "pass": true,
+      "detail": "Desktop Join CTA: primary Button (only pill in nav bar)"
+    },
+    {
+      "id": "19-lint-ds",
+      "pass": true,
+      "detail": "npm run lint:ds exit 0"
+    },
+    {
+      "id": "20-check",
+      "pass": true,
+      "detail": "npm run check exit 0"
+    }
+  ],
+  "timestamp": "2026-06-29T08:45:00.214Z"
+}

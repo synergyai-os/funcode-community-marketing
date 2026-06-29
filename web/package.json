@@ -17,6 +17,7 @@
 		"lint": "prettier --check . && eslint . && npm run lint:ds",
 		"lint:ds": "node scripts/check-design-system.mjs",
 		"eval:ds": "node scripts/eval-design-system-cli.mjs",
+		"eval:site-chrome": "node scripts/eval-site-chrome-cli.mjs",
 		"eval:hero-chips": "node scripts/eval-hero-chips.mjs",
 		"eval:showcase": "node scripts/build-showcase-data.mjs && node scripts/eval-showcase.mjs",
 		"build:showcase": "node scripts/build-showcase-data.mjs",

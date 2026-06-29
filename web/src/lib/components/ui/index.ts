@@ -15,4 +15,8 @@ export { default as PredictionBadge } from './PredictionBadge.svelte';
 export { default as StickyYearNav } from './StickyYearNav.svelte';
 export { default as ChapterHeader } from './ChapterHeader.svelte';
 export { default as TimelineCard } from './TimelineCard.svelte';
+export { default as NavPillar } from './NavPillar.svelte';
+export { default as NavGroup } from './NavGroup.svelte';
+export { default as SiteMenu } from './SiteMenu.svelte';
+export { default as SiteChrome } from './SiteChrome.svelte';
 export type { MarqueeSpeed } from './Marquee.svelte';
